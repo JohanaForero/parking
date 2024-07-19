@@ -8,7 +8,7 @@ tags:
   - name: Authentication
     description: Endpoints for user authentication and authorization
 paths:
-  /parking/login:
+  /login:
     post:
       tags:
         - Authentication
@@ -169,10 +169,9 @@ components:
         idToken:
           type: string
           description: token to authenticate
-          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9
-            .eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Im9zY2FyLnBlcmV6IiwiY3VzdG9tOmNvbXBhbnkiOiJPc2Nhci1KZWFucyIsImN1c3Rvb
-            TpuYW1lIjoiT3NjYXIgUGVyZXoiLCJjdXN0b206cm9sIjoiYWRtaW5pc3RyYWRvciIsImFkbWluIjp0cnVlLCJpYXQiOjE3MDc3NjYwMjc
-            sImV4cCI6MTcwNzc2OTYyN30.cno61b-yD8ttpwuhSpgLKzNKj02jEvFm1bAzvKV42rM
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImVkd2luIiwiY3VzdG9tOnJvbGUi
+            OiJBRE1JTklTVFJBVE9SIiwiaWF0IjoxNzA4NzI2MTA2LCJleHAiOjE3MDg3Mjk3MDZ9.7O53n-fOWDzK4qt-txF5XyLYt5Q_IgZA8ucC0kaf
+            WRI
         refreshToken:
           $ref: '#/components/schemas/refreshToken'
         expireIn:

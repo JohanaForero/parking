@@ -29,14 +29,24 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation('org.springframework.boot:spring-boot-starter') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j'
+    implementation('org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
     implementation 'org.openapitools:openapi-generator-gradle-plugin:7.6.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
     implementation 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
     compileOnly 'org.projectlombok:lombok:1.18.34'
+    compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'
     implementation 'org.postgresql:postgresql:42.7.3'
     testImplementation 'com.h2database:h2:2.2.224'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -52,4 +62,41 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+openApiGenerate {
+    generatorName = "spring"
+    inputSpec = "$rootDir/src/main/resources/static/open-api.yaml" // ruta al archivo OpenAPI
+    outputDir = layout.buildDirectory.dir("generated").get().toString()
+    apiPackage = "com.forero.parking.openapi.api"
+    modelPackage = "com.forero.parking.openapi.model"
+    invokerPackage = "com.forero.parking.invoker"
+    modelNameSuffix = "Dto"
+    configOptions = [
+            annotationLibrary    : "none",
+            dateLibrary          : "java8",
+            documentationProvider: "none",
+            library              : "spring-boot",
+            openApiNullable      : "false",
+            useBeanValidation    : "true",
+            useSpringBoot3       : "true",
+            useSwaggerUI         : "true",
+            interfaceOnly        : "true",
+            serializableModel    : "true"
+    ]
+    globalProperties = [
+            "skipFormModel": "false"
+    ]
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/src/main/java"
+        }
+    }
+}
+
+tasks.compileJava {
+    dependsOn tasks.openApiGenerate
 }

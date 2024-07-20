@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true # http://localhost:9081/h2-console
+
+parking:
+  global:
+    cost-per-hour: 10
+    number-of-parking-lots: 3

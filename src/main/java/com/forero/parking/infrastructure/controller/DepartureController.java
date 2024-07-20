@@ -13,6 +13,7 @@ import com.forero.parking.openapi.model.ParkingDepartureResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,7 @@ public class DepartureController implements DepartureApi {
     private final HistoryMapper historyMapper;
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN','PARTNER')")
     public ResponseEntity<ParkingDepartureResponseDto> registerVehicleExit(final ParkingDepartureRequestDto parkingDepartureRequestDto) {
         final ParkingLot parkingLot = this.parkingLotMapper.toDomain(parkingDepartureRequestDto.getParkingLotId());
         final Vehicle vehicle = this.vehicleMapper.toDomain(parkingDepartureRequestDto.getLicensePlate());

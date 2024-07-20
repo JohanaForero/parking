@@ -149,6 +149,32 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "vehicles",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJRnVxbE9SYWxYbXBpcnFsX251eTg1OWwzazZPbWVTVWZST3kwNWdHandzIn0.eyJleHAiOjE3MjE0ODE2MDIsImlhdCI6MTcyMTQ2MDAwMiwianRpIjoiNjdmNDgxM2MtZmNiMy00NDdiLWFhYTItZjBkZmE1YjU3YzZiIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjIyZjU5MGNlLTAxMzEtNDdiZS05NWI3LTM4MWJlZjQyYmJlMiIsInR5cCI6IkJlYXJlciIsImF6cCI6InBhcmtpbmctY2xpZW50Iiwic2lkIjoiNDU5YWNkNWMtNjQyOC00ZWMyLWE5ZjItYTI2ZDdiYWQ3Yjk2IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtcGFya2luZyIsInVtYV9hdXRob3JpemF0aW9uIiwiQURNSU4iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWRtaW4iLCJnaXZlbl9uYW1lIjoiIiwiZmFtaWx5X25hbWUiOiIiLCJlbWFpbCI6ImFkbWluQG1haWwuY29tIn0.ZtIBp9bWlS77fWnfej1peIREyzkq9vxbKIjcbZXucZQ5TixYN_c21sQMNQmMEoXkgpipDV_bR6gmi88mYX5Yw7Nsrg2mcLbaV4TmeOD6YSVVKmGYDjXuWOi9qoOZQh6IHmFaIrnpA2838UpK2C8A9YPuysJbBZignGSHa1k_8XnHkPSopbPkNX32kTFAM2Q4Trbgtpj3JMf7OCs0F9g9aVNLzaaJxHtRGYsDoPcBn0k-vkO0hZGJ3aBqyY1wE23koN3ZNNSxB79hmjrBLYo1uX1IF_YKh-JaKJ4CZ8cuz6zSh-1mIP9MoF02piB5v0ExECNpJDtigksG915zv2gylA",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:9081/parking/vehicles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9081",
+					"path": [
+						"parking",
+						"vehicles"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

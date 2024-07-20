@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
@@ -36,6 +37,10 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
 
         return this.dbPort.registerHistoryExit(vehicle.getLicensePlate(), parkingLot.getId(), entranceDate,
                 departureDate, totalPaid);
+    }
+
+    public List<ParkingLot> getVehiclesInParking() {
+        return this.dbPort.getVehiclesInParking();
     }
 
     private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate) {

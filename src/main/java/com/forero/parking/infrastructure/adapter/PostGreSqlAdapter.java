@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -105,5 +106,13 @@ public class PostGreSqlAdapter implements DbPort {
                     return this.historyMapper.toDomain(historyEntity);
                 })
                 .orElse(null);
+    }
+
+    @Override
+    public List<ParkingLot> getVehiclesInParking() {
+        return this.parkingLotRepository.findByVehicleIsNotNull()
+                .stream()
+                .map(this.parkingLotMapper::toDomain)
+                .toList();
     }
 }

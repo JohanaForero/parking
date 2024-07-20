@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Profile;
 
 @TestConfiguration
 public class CustomTestConfiguration {
-    
-    @Bean()
+
+    @Bean
     @Profile("test")
     TimeConfiguration timeConfiguration() {
         return new TestTimeConfiguration();

@@ -1,0 +1,46 @@
+[
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/mail",
+      "body": {
+        "type": "JSON",
+        "json": {
+          "email": "${json-unit.any-string}",
+          "placa": "${json-unit.any-string}",
+          "mensaje": "${json-unit.any-string}",
+          "parqueaderoNombre": "FAIL"
+        },
+        "matchType": "ONLY_MATCHING_FIELDS"
+      }
+    },
+    "httpResponse": {
+      "statusCode": 500,
+      "body": {
+        "mensaje": "Error interno en el servidor"
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method": "POST",
+      "path": "/mail",
+      "body": {
+        "type": "JSON",
+        "json": {
+          "email": "${json-unit.any-string}",
+          "placa": "${json-unit.any-string}",
+          "mensaje": "${json-unit.any-string}",
+          "parqueaderoNombre": "${json-unit.ignore-element}"
+        },
+        "matchType": "ONLY_MATCHING_FIELDS"
+      }
+    },
+    "httpResponse": {
+      "statusCode": 200,
+      "body": {
+        "mensaje": "Correo Enviado"
+      }
+    }
+  }
+]

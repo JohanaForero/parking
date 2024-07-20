@@ -151,9 +151,9 @@ class EntranceIntegrationTest extends BaseIT {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideInvalidParameters")
-    void test_RegisterVehicleEntry_withoutLicensePlate_shouldThrowBadRequest(final String testName,
-                                                                             final ParkingEntranceRequestDto parkingEntranceRequestDto,
-                                                                             final String field) throws Exception {
+    void test_RegisterVehicleEntry_withInvalidParameters_shouldThrowBadRequest(final String testName,
+                                                                               final ParkingEntranceRequestDto parkingEntranceRequestDto,
+                                                                               final String field) throws Exception {
         //Given
         final ErrorObjectDto expected = new ErrorObjectDto();
         expected.message(String.format("Invalid %s parameters", field));

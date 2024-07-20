@@ -5,64 +5,31 @@ info:
 servers:
   - url: http://localhost:9081/parking/
 tags:
-  - name: Authentication
+  - name: Parking
     description: Endpoints for user authentication and authorization
 paths:
-  /login:
+  /entrance:
     post:
       tags:
-        - Authentication
-      summary: Authenticate user
-      description: authenticate user in the application
-      operationId: logIn
+        - Parking
+      summary: Register vehicle entry
+      description: Register vehicle entry
+      operationId: RegisterVehicleEntry
+      security:
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: '#/components/schemas/ParkingEntranceRequest'
       responses:
         200:
-          description: The user has logged in successfully
+          description: The vehicle has entered successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResponse'
-        400:
-          description: Bad Request - If the resource is misspelled (badly constructed URI)
-            / If the data in the request is not correct, return INVALID_PARAMETERS.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorObject'
-        401:
-          description: Unauthorized - If the API requires subscription and the client does not have it
-            / If there is a problem with the User Credentials, return INVALID_CREDENTIALS.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorObject'
-        426:
-          description: Upgrade Required - If the API requires a password change due to security policies, but the current
-            credentials provided are not sufficient to proceed. The user must update their password to access the
-            requested resource, returns NEW_PASSWORD_REQUIRED.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorObject'
-        503:
-          description: Service Unavailable - Use it to report the Specific Errors that the server suffers,
-            return AUTH_MANAGER_INTERNAL.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorObject'
-        500:
-          description: Internal Server Error - Use it as a General System Error, return INTERNAL_SERVER_ERROR.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorObject'
+                $ref: '#/components/schemas/ParkingEntranceResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -70,115 +37,30 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    # Properties
-    username:
-      type: string
-      description: User names only accept lowercase letters and numbers.
-      example: oscarperez
-      pattern: ^[a-z0-9]+$
-    password:
-      type: string
-      description: The user's password must be at least 8 characters long, at least one uppercase letter,
-        one lowercase letter, one special character and at least one number.
-      example: $tR0nG_pA55vv0Rd
-      pattern: ^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=_-]).{8,}$
-    refreshToken:
-      type: string
-      description: token to get new idToken
-      example: eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAifQ.gtDG9sDtr2BF4cWkucDNm_aPwU29xWziANczYA
-        YZkyrmYwt6TOB8Uc6K-f8jXmh0j_70k-i3BNjWDhY_XRq1y3bxdOCQ6Mx4qAXWu77f85mH6ikxi2CdG5c5szaQk4zeT95o9BBOuto9BdSvy9
-        Abs9Iw4_p-rlPghZmL_iQ6rNktPH-ffiMNN72Cjhs0D-1B3q-0BvhXwL-Y-ju8Xp1iHaJMMAP4c3Otl8Ha173nRMrYe3mR-herbMlLKcH4Iq
-        e5z9ZEXtER_9f_GZ6fiDyOIhzK3-h9PmfDPW_jwQQj_HUYMcwQnXbxTR17XZIaQYwbB6gYXqd65YXXX9XVsrN7aA.YVzHoPkPMWoSNe0V.wJ
-        wHTaZp8IcJ3jSfbIjRb8uZyjHo-C7MNno83uXhP4DhE06yxaU1eiX62meip_bhbMaw9crDAk0JV-RfXfuiKO6E9aaBjvXUfcwRYYOAU5iTMu
-        xS1uzHQ23YUh8YbnL0Jpd5ROxBdQddfQxPhbEergGntaRn3o0tQiSEKlSn_OlbQH0D1PqBLwxzJFAlbqNNSil2VaKJRoZv_oDEKXRy13-kpc
-        VgVZXklmelFO4gZblbCXSE1iRj8ZoSKgcZ88njYd-UWQoaT8OosFq5YUzXuDLyuH8eDQFGMe5X_actH8IEC0Y5Zsjr_hb44JcQ4VuJKh-JPt
-        nMpjoqlFawAn2FY8x9MaHueRGiZ12LE9NePeQZyd2Oega3M2fy2u12E-415leEQMZ_USg8t6bvX1B67qCg4t4wThKJAK76toIUl49nbmJ2OW
-        LPL_aREfzfn_ThezRSYBFpLtNbgEZ7iicKTeHn7MOWxHnL_mFtCzIoHMzlbpgTl7zZDQ4zhtSEmtZddsQxnMExWF6AM6WZv5d8Fxc8zU6qSE
-        7CiFAD4fN5NCvf6PHfMJ3UsJwE_vNcyPk4AWJ3fB-13-sKWNTfV3Hv8PoJYWpD4gfESws3LHmQpT375br5VaKDVZCLpyVLNAMEn-D8bJ9I1O
-        0gqaBE79eYf2XotBk2K2DMr7_TSGIyc3So8t2q0X6HGCEADaueDKiRskvnjoEEY212_EpF-998mLzAR1QhVpm3V0VCJem6X-RZIfgm05SHiq
-        k3jATpUEGg9ShWE-PwmfrVI5D_eC0Ou36WaKYsP0YaQXty0moRNcS02yU2jcrIQ-V07W8mB5n3gs1DoH35C8GBbCRgq7Df5pO0QDAyCNwIH6
-        9SBZB9L4i2jDxJWXudxVkkPR7GwMe8KaNI2GwhZT6s1_X2vBnV3L9mqFYQuLXZvjrGtWO84g-i16zIOVfB8p0NuqxGOKAB_ss5ozuNav3z8r
-        ACITXp_-L3kHWwi4WtZoOM4Qv3OGf1FnQK0IszPWLdOqgHp9QQFTEEbLp6szj_xPS4FYSt6Ct19dTgI0cvqFWcrR6CkeCWNJjXoUKMRwxxcx
-        VNqPBqvyZ_OSP_bZAZrFeKXHHEl7UyU0jxndj_shF79WCudoLeixeELtJJas9lWpwPyz6eHjc-XgFFqa8ep2iNakxprnCA4VQoUAXIUyPV3w
-        8kR3EAS69zEVCF8n3nx8wvO7pq7uOHatYiAcoik0wWo3x4_RE9_LkcGj5uixqMduIyHgTzi6KRKVmO378Fl63Ltqh97JV0q82-TfvRKmrlS_
-        w5w3qUfosEfUWI6bLHsHdnsvYj6GWgRWoF.x880xoHN_1tPIrdrW6W0bA
-    # Objects
-    ErrorObject:
+    ParkingEntranceRequest:
+      required:
+        - licencePlate
+        - parkingLotId
       type: object
+      description: Data required to enter a vehicle into the parking lot
       additionalProperties: false
       properties:
-        code:
+        licencePlate:
           type: string
-          description: Error code
-          example: "INVALID_PARAMETERS"
-        message:
-          type: string
-          description: Error message (detailed description)
-          example: Invalid Request. Please, check the data in the request (QueryString Parameters and/or Body).
-      description: Error details
-      example:
-        code: "INVALID_PARAMETERS"
-        message: Invalid Request. Please, check the data in the request (QueryString Parameters and/or Body).
-    LoginRequest:
-      required:
-        - username
-        - password
-      type: object
-      properties:
-        username:
-          $ref: '#/components/schemas/username'
-        password:
-          $ref: '#/components/schemas/password'
-    UserResponse:
-      required:
-        - user
-        - tokenAuthentication
-      type: object
-      properties:
-        user:
-          $ref: '#/components/schemas/User'
-        tokenAuthentication:
-          $ref: '#/components/schemas/TokenAuthentication'
-    User:
-      required:
-        - role
-        - name
-      type: object
-      properties:
-        role:
-          $ref: '#/components/schemas/Role'
-        name:
-          type: string
-          description: user's full name
-          example: Oscar Perez
-    Role:
-      type: string
-      description: role in the application
-      enum:
-        - ADMINISTRATOR
-        - PARTNER
-      example: ADMINISTRATOR
-    TokenAuthentication:
-      required:
-        - idToken
-        - refreshToken
-        - expireIn
-        - tokenType
-      type: object
-      properties:
-        idToken:
-          type: string
-          description: token to authenticate
-          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImVkd2luIiwiY3VzdG9tOnJvbGUi
-            OiJBRE1JTklTVFJBVE9SIiwiaWF0IjoxNzA4NzI2MTA2LCJleHAiOjE3MDg3Mjk3MDZ9.7O53n-fOWDzK4qt-txF5XyLYt5Q_IgZA8ucC0kaf
-            WRI
-        refreshToken:
-          $ref: '#/components/schemas/refreshToken'
-        expireIn:
+          description: Vehicle license plate
+          example: ABC-123
+        parkingLotId:
           type: integer
-          description: refreshToken expiration time
-          example: 3600
-        tokenType:
-          type: string
-          description: token type
-          example: Bearer
+          description: Parking lot id
+          example: 123
+    ParkingEntranceResponse:
+      required:
+        - id
+      type: object
+      additionalProperties: false
+      description: Response when a vehicle successfully enters the parking lot
+      properties:
+        id:
+          type: integer
+          description: record id
+          example: 123456

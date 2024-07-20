@@ -1,21 +1,27 @@
 package com.forero.parking.infrastructure.controller;
 
-import com.forero.parking.openapi.api.ParkingApi;
-import com.forero.parking.openapi.model.LoginRequestDto;
-import com.forero.parking.openapi.model.UserResponseDto;
+import com.forero.parking.application.service.ParkingLotService;
+import com.forero.parking.openapi.api.EntranceApi;
+import com.forero.parking.openapi.model.ParkingEntranceRequestDto;
+import com.forero.parking.openapi.model.ParkingEntranceResponseDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ParkingController implements ParkingApi {
-    private static final String LOGGER_PREFIX = String.format("[%s] ", ParkingController.class.getSimpleName());
+@RequestMapping("${openapi.aPIDocumentation.base-path}")
+public class ParkingController implements EntranceApi {
+    private final ParkingLotService parkingLotService;
 
     @Override
-    public ResponseEntity<UserResponseDto> logIn(LoginRequestDto loginRequestDto) {
-        return ParkingApi.super.logIn(loginRequestDto);
+    @PreAuthorize("hasAnyAuthority('ADMIN','PARTNER')")
+    public ResponseEntity<ParkingEntranceResponseDto> registerVehicleEntry(final ParkingEntranceRequestDto parkingEntranceRequestDto) {
+        final ParkingEntranceResponseDto parkingEntranceResponseDto = new ParkingEntranceResponseDto();
+        parkingEntranceResponseDto.setId(this.parkingLotService.registerVehicleEntry());
+        return new ResponseEntity<>(parkingEntranceResponseDto, HttpStatus.CREATED);
     }
 }

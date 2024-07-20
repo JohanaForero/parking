@@ -1,4 +1,6 @@
 package com.forero.parking.domain.model;
 
-public class Role {
+public enum Role {
+    ADMINISTRATOR,
+    PARTNER
 }

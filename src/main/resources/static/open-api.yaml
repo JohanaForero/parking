@@ -1,0 +1,66 @@
+openapi: 3.0.2
+info:
+  title: API Documentation
+  version: 1.0.0
+servers:
+  - url: http://localhost:9081/parking/
+tags:
+  - name: Parking
+    description: Endpoints for user authentication and authorization
+paths:
+  /entrance:
+    post:
+      tags:
+        - Parking
+      summary: Register vehicle entry
+      description: Register vehicle entry
+      operationId: RegisterVehicleEntry
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkingEntranceRequest'
+      responses:
+        200:
+          description: The vehicle has entered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingEntranceResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ParkingEntranceRequest:
+      required:
+        - licencePlate
+        - parkingLotId
+      type: object
+      description: Data required to enter a vehicle into the parking lot
+      additionalProperties: false
+      properties:
+        licencePlate:
+          type: string
+          description: Vehicle license plate
+          example: ABC-123
+        parkingLotId:
+          type: integer
+          description: Parking lot id
+          example: 123
+    ParkingEntranceResponse:
+      required:
+        - id
+      type: object
+      additionalProperties: false
+      description: Response when a vehicle successfully enters the parking lot
+      properties:
+        id:
+          type: integer
+          description: record id
+          example: 123456

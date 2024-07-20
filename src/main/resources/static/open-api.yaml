@@ -80,6 +80,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParkingVehiclesResponse'
+  /email:
+    post:
+      tags:
+        - Parking
+      summary: Send email to vehicle owner
+      description: Send email to vehicle owner
+      operationId: sendEmail
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkingEmailRequest'
+      responses:
+        200:
+          description: Email was sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingEmailResponse'
+        400:
+          description: Bad Request - If the resource is misspelled (badly constructed URI) If the data in the request is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
 components:
   securitySchemes:
     bearerAuth:
@@ -155,6 +183,42 @@ components:
           items:
             $ref: '#/components/schemas/Vehicle'
       description: List of vehicles in the parking
+    ParkingEmailRequest:
+      required:
+        - email
+        - licensePlate
+        - message
+        - parkingName
+      type: object
+      description: Data required to send a email
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email address
+          example: test@test.com
+        licensePlate:
+          $ref: '#/components/schemas/licensePlate'
+        message:
+          type: string
+          description: Email message
+          example: Parking lot entry.
+        parkingName:
+          type: string
+          description: Parking name
+          example: PARKING LOT HIRE ME
+    ParkingEmailResponse:
+      required:
+        - message
+      type: object
+      additionalProperties: false
+      description: Response when an email is sent successfully
+      properties:
+        message:
+          type: string
+          description: Email status message
+          example: Email sent successfully
     Vehicle:
       required:
         - id

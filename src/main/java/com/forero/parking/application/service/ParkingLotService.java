@@ -20,7 +20,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
     public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
         this.validationService.validateParkingLotExists(parkingLot.getId());
         this.validationService.validateParkingLotFree(parkingLot.getId());
-        this.validationService.validateVehicleInside(vehicle.getLicensePlate());
+        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
 
         parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
         return this.dbPort.registerHistoryEntry(parkingLot);

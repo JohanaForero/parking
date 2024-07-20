@@ -3,6 +3,7 @@ package com.forero.parking.application.service;
 import com.forero.parking.application.configuration.GlobalConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.exception.DepartureException;
+import com.forero.parking.domain.exception.EmailException;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.model.ParkingLot;
 import org.springframework.stereotype.Service;
@@ -24,11 +25,19 @@ public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfigu
         }
     }
 
-    public void validateVehicleInside(final String licensePlate) {
+    public void validateVehicleNotInside(final String licensePlate) {
         final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
         if (parkingLot != null) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
                     "already inside in parking lot %s", licensePlate, parkingLot.getId()));
+        }
+    }
+
+    public void validateVehicleInside(final String licensePlate) {
+        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
+        if (parkingLot == null) {
+            throw new EmailException.VehicleNotInsideException(String.format("Vehicle with license plate %s is " +
+                    "not inside in parking", licensePlate));
         }
     }
 

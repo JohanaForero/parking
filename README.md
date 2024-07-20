@@ -7,8 +7,16 @@ docker
 
 ## docker compose
 
-Before starting the project,
+Before compiling and before starting the project,
 in the terminal, locate the root of this project, enter the docker directory, and run the command `docker compose up`
+
+## compile
+
+in the terminal, locate the root of this project, and run the command `./gradlew clean build`
+
+## run
+
+in the terminal, locate the root of this project, and run the command `./gradlew bootRun`
 
 ### swagger
 

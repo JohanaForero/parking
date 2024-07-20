@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:12.19
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       POSTGRES_DB: parking
       POSTGRES_USER: admin1
@@ -12,7 +12,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:25.0
     ports:
-      - 8080:8080
+      - "8080:8080"
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=test
@@ -21,3 +21,11 @@ services:
     command:
       - start-dev
       - --import-realm
+  mockserver:
+    image: mockserver/mockserver:5.15.0
+    ports:
+      - "1080:1080"
+    environment:
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/init_mockserver.json
+    volumes:
+      - ./mock-server/init_mockserver.json:/config/init_mockserver.json

@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URI;
-import java.util.Random;
 import java.util.stream.Stream;
 
 class DepartureIntegrationTest extends BaseIT {
@@ -82,9 +81,9 @@ class DepartureIntegrationTest extends BaseIT {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideInvalidParameters")
-    void test_RegisterVehicleExit_withoutLicensePlate_shouldThrowBadRequest(final String testName,
-                                                                            final ParkingDepartureRequestDto parkingDepartureRequestDto,
-                                                                            final String field) throws Exception {
+    void test_RegisterVehicleExit_withInvalidParameters_shouldThrowBadRequest(final String testName,
+                                                                              final ParkingDepartureRequestDto parkingDepartureRequestDto,
+                                                                              final String field) throws Exception {
         //Given
         final ErrorObjectDto expected = new ErrorObjectDto();
         expected.message(String.format("Invalid %s parameters", field));
@@ -131,15 +130,5 @@ class DepartureIntegrationTest extends BaseIT {
         final String body = response.andReturn().getResponse().getContentAsString();
         final ParkingDepartureResponseDto actual = OBJECT_MAPPER.readValue(body, ParkingDepartureResponseDto.class);
         Assertions.assertEquals(expected, actual);
-    }
-
-    private long generateRandomParkingLotWithExclusion(final long parkingLotExcluded) {
-        final Random random = new Random();
-        int parkingLotIdGenerated;
-        do {
-            parkingLotIdGenerated = random.nextInt(3) + 1;
-        } while (parkingLotIdGenerated == parkingLotExcluded);
-
-        return parkingLotIdGenerated;
     }
 }

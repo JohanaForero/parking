@@ -23,8 +23,9 @@ import java.util.Map;
 @Slf4j
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
-    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String LOGGER_PREFIX = String.format("[%s] ", CustomJwtDecoder.class.getSimpleName());
+    
+    protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public Jwt decode(final String token) throws JwtException {
@@ -44,11 +45,10 @@ public class CustomJwtDecoder implements JwtDecoder {
             }
 
             String realmAccessString = String.valueOf(claims.get("realm_access"));
-            realmAccessString = realmAccessString.replaceAll("(\\w+)", "\"$1\"");
-            ;
+            realmAccessString = realmAccessString.replaceAll("(\\w+)", "\"$1\"");;
             realmAccessString = realmAccessString.replace("\"-\"", "-");
             realmAccessString = realmAccessString.replace("=", ":");
-            final RealmAccess realmAccess = OBJECT_MAPPER.readValue(realmAccessString, RealmAccess.class);
+            final RealmAccess realmAccess =  OBJECT_MAPPER.readValue(realmAccessString, RealmAccess.class);
             claims.put("custom:roles", realmAccess.getRoles());
 
             return Jwt.withTokenValue(parsedJwt.getParsedString())
@@ -60,7 +60,7 @@ public class CustomJwtDecoder implements JwtDecoder {
             throw new RuntimeException(parseException);
         }
     }
-
+    
     @Getter
     @Setter
     static class RealmAccess {

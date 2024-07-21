@@ -176,7 +176,7 @@ class EntranceIntegrationTest extends BaseIT {
         //Given
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate("ABc123");
-        parkingEntranceRequestDto.setParkingLotId(1L);
+        parkingEntranceRequestDto.setParkingLotId(2L);
 
         final long idOfLastHistory = this.getIdOfLastHistory();
 

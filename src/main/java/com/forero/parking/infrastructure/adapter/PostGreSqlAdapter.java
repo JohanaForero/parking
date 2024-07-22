@@ -39,7 +39,11 @@ public class PostGreSqlAdapter implements DbPort {
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
         ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
-                .orElse(new ParkingLotEntity());
+                .orElseGet(() -> {
+                    final ParkingLotEntity newParkingLotEntity = new ParkingLotEntity();
+                    newParkingLotEntity.setId(parkingLot.getId());
+                    return newParkingLotEntity;
+                });
 
         final LocalDateTime entranceDate = this.timeConfiguration.now();
 

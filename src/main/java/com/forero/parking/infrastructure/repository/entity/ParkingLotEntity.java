@@ -30,4 +30,7 @@ public class ParkingLotEntity {
 
     @Column(name = "entrance_date")
     private LocalDateTime entranceDate;
+
+    @Column(name = "user_id")
+    private Integer userId;
 }

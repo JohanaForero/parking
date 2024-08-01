@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
@@ -22,7 +21,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         this.validationService.validateParkingLotFree(parkingLot.getId());
         this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
 
-        parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
+        this.dbPort.registerVehicleEntry(parkingLot, vehicle);
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
 
@@ -39,14 +38,18 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
                 departureDate, totalPaid);
     }
 
-    public List<ParkingLot> getVehiclesInParking() {
-        return this.dbPort.getVehiclesInParking();
-    }
+//    public List<Vehicle> getVehiclesInParking(final String parkingName) {
+//        return this.dbPort.getVehiclesInParkingLot(parkingName);
+//    }
 
     private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate) {
         final Duration duration = Duration.between(entranceDate, departureDate);
         final long minutes = duration.toSeconds();
         final double hoursRounded = Math.ceil(minutes / 3600.0);
         return this.globalConfiguration.getCostPerHour().multiply(BigDecimal.valueOf(hoursRounded));
+    }
+
+    public Long createParking(final ParkingLot parkingLot) {
+        return this.dbPort.save(parkingLot);
     }
 }

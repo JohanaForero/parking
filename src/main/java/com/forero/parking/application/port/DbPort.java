@@ -6,7 +6,6 @@ import com.forero.parking.domain.model.Vehicle;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface DbPort {
     ParkingLot registerVehicleEntry(ParkingLot parkingLot, Vehicle vehicle);
@@ -22,5 +21,7 @@ public interface DbPort {
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
-    List<ParkingLot> getVehiclesInParking();
+//    List<Vehicle> getVehiclesInParkingLot(String parkingLotName);
+
+    Long save(ParkingLot parkingLot);
 }

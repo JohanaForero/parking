@@ -2,14 +2,13 @@ package com.forero.parking.infrastructure.mapper;
 
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
-import com.forero.parking.openapi.model.ParkingVehiclesResponseDto;
+import com.forero.parking.openapi.model.ParkingRequestDto;
 import com.forero.parking.openapi.model.VehicleDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 @Mapper
 public interface ParkingLotMapper {
@@ -20,18 +19,25 @@ public interface ParkingLotMapper {
 
     ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
 
-    default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {
-        if (parkingLots == null) {
-            return null;
-        }
+    //    @Mapping(target = "id", source = "parkingLotId")
+//    @Mapping(target = "vehicle", ignore = true)
+//    @Mapping(target = "entranceDate", ignore = true)
+    ParkingLot toModel(ParkingLotEntity parkingLotId);
 
-        final ParkingVehiclesResponseDto parkingVehiclesResponseDto = new ParkingVehiclesResponseDto();
-        parkingVehiclesResponseDto.vehicles(this.toDtos(parkingLots));
+//    ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
+//
+//    default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {
+//        if (parkingLots == null) {
+//            return null;
+//        }
+//
+//        final ParkingVehiclesResponseDto parkingVehiclesResponseDto = new ParkingVehiclesResponseDto();
+//        parkingVehiclesResponseDto.vehicles(this.toDtos(parkingLots));
+//
+//        return parkingVehiclesResponseDto;
+//    }
 
-        return parkingVehiclesResponseDto;
-    }
-
-    List<VehicleDto> toDtos(List<ParkingLot> parkingLots);
+//    List<VehicleDto> toDtos(List<ParkingLot> parkingLots);
 
     @Mapping(target = "id", source = "vehicle.id")
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
@@ -42,4 +48,10 @@ public interface ParkingLotMapper {
         return localDateTime != null ? OffsetDateTime.of(localDateTime, OffsetDateTime.now().getOffset()) : null;
     }
 
+    @Mapping(target = "vehicle", ignore = true)
+    @Mapping(target = "entranceDate", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    ParkingLot toModel(ParkingRequestDto parkingRequestDto);
+
+    ParkingLotEntity toEntity(ParkingLot parkingLot);
 }

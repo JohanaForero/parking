@@ -1,6 +1,5 @@
 package com.forero.parking.infrastructure.mapper;
 
-import com.forero.parking.domain.model.DetailRegisterVehicle;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.repository.entity.DetailRegisterVehiclesEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;

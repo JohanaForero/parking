@@ -23,4 +23,6 @@ public interface DbPort {
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
     List<ParkingLot> getVehiclesInParking();
+
+    Long save(ParkingLot parkingLot);
 }

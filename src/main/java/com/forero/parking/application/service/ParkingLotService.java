@@ -49,4 +49,8 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         final double hoursRounded = Math.ceil(minutes / 3600.0);
         return this.globalConfiguration.getCostPerHour().multiply(BigDecimal.valueOf(hoursRounded));
     }
+
+    public Long createParking(final ParkingLot parkingLot) {
+        return this.dbPort.save(parkingLot);
+    }
 }

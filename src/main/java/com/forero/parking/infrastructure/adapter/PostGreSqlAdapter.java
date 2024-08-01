@@ -119,4 +119,11 @@ public class PostGreSqlAdapter implements DbPort {
                 .map(this.parkingLotMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public Long save(ParkingLot parkingLot) {
+        ParkingLotEntity parkingLotEntity = this.parkingLotMapper.toEntity(parkingLot);
+        ParkingLotEntity entity = this.parkingLotRepository.save(parkingLotEntity);
+        return entity.getId();
+    }
 }

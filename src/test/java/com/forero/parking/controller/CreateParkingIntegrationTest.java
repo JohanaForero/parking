@@ -38,11 +38,29 @@ class CreateParkingIntegrationTest extends BaseIT {
 
         final ParkingResponseDto expected = new ParkingResponseDto();
         expected.setParkingId(this.parkingId());
-        
+
         //Then
         response.andExpect(MockMvcResultMatchers.status().isCreated());
         final String body = response.andReturn().getResponse().getContentAsString();
         final ParkingResponseDto actual = OBJECT_MAPPER.readValue(body, ParkingResponseDto.class);
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void test_createParking_withRequestValidAndRolePartner_shouldStatusForbidden() throws Exception {
+        //Given
+        final ParkingRequestDto parkingRequestDto = new ParkingRequestDto();
+        parkingRequestDto.setParkingName("parking_2");
+        parkingRequestDto.setPartnerId("6899455");
+
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 }

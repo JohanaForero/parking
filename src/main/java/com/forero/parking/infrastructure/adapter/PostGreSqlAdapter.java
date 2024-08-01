@@ -121,7 +121,7 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public int save(ParkingLot parkingLot) {
+    public int saveParking(ParkingLot parkingLot) {
         ParkingLotEntity parkingLotEntity = this.parkingLotMapper.toEntity(parkingLot);
         ParkingLotEntity entity = this.parkingLotRepository.save(parkingLotEntity);
         return entity.getId().intValue();

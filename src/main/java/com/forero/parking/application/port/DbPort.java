@@ -24,5 +24,5 @@ public interface DbPort {
 
     List<ParkingLot> getVehiclesInParking();
 
-    int save(ParkingLot parkingLot);
+    int saveParking(ParkingLot parkingLot);
 }

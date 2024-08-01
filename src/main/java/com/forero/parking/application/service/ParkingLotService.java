@@ -51,6 +51,6 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
     }
 
     public int createParking(final ParkingLot parkingLot) {
-        return this.dbPort.save(parkingLot);
+        return this.dbPort.saveParking(parkingLot);
     }
 }

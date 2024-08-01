@@ -24,9 +24,9 @@ public class ParkingController implements DefaultApi {
     @PreAuthorize("hasAnyAuthority('ADMIN','PARTNER')")
     public ResponseEntity<ParkingResponseDto> createParking(ParkingRequestDto parkingRequestDto) {
         final ParkingLot parkingLot = this.parkingLotMapper.toModel(parkingRequestDto);
-        final Long parkingId = this.parkingLotService.createParking(parkingLot);
+        final int parkingId = this.parkingLotService.createParking(parkingLot);
         final ParkingResponseDto parkingResponseDto = new ParkingResponseDto();
-        parkingResponseDto.setParkingId(parkingId.intValue());
+        parkingResponseDto.setParkingId(parkingId);
         return new ResponseEntity<>(parkingResponseDto, HttpStatus.CREATED);
     }
 }

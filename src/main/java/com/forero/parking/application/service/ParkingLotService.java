@@ -50,7 +50,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         return this.globalConfiguration.getCostPerHour().multiply(BigDecimal.valueOf(hoursRounded));
     }
 
-    public Long createParking(final ParkingLot parkingLot) {
+    public int createParking(final ParkingLot parkingLot) {
         return this.dbPort.save(parkingLot);
     }
 }

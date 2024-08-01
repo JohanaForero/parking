@@ -3,14 +3,18 @@ package com.forero.parking.infrastructure.adapter;
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
+import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
+import com.forero.parking.infrastructure.mapper.ParkingMapper;
 import com.forero.parking.infrastructure.repository.HistoryRepository;
 import com.forero.parking.infrastructure.repository.ParkingLotRepository;
+import com.forero.parking.infrastructure.repository.ParkingRepository;
 import com.forero.parking.infrastructure.repository.VehicleRepository;
 import com.forero.parking.infrastructure.repository.entity.HistoryEntity;
+import com.forero.parking.infrastructure.repository.entity.ParkingEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
 import com.forero.parking.infrastructure.repository.entity.VehicleEntity;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +29,10 @@ import java.util.List;
 public class PostGreSqlAdapter implements DbPort {
     private final VehicleRepository vehicleRepository;
     private final ParkingLotRepository parkingLotRepository;
+    private final ParkingRepository parkingRepository;
     private final HistoryRepository historyRepository;
     private final ParkingLotMapper parkingLotMapper;
+    private final ParkingMapper parkingMapper;
     private final HistoryMapper historyMapper;
     private final TimeConfiguration timeConfiguration;
 
@@ -121,9 +127,9 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public int saveParking(ParkingLot parkingLot) {
-        ParkingLotEntity parkingLotEntity = this.parkingLotMapper.toEntity(parkingLot);
-        ParkingLotEntity entity = this.parkingLotRepository.save(parkingLotEntity);
+    public int saveParking(Parking parking) {
+        ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
+        ParkingEntity entity = this.parkingRepository.save(parkingEntity);
         return entity.getId().intValue();
     }
 }

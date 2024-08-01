@@ -3,14 +3,12 @@ package com.forero.parking.domain.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Setter
 @Getter
-public class ParkingLot {
+public class Parking {
     private Long id;
 
-    private Vehicle vehicle;
+    private String name;
 
-    private LocalDateTime entranceDate;
+    private String partnerId;
 }

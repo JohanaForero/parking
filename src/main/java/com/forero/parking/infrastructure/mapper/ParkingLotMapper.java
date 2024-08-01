@@ -2,7 +2,6 @@ package com.forero.parking.infrastructure.mapper;
 
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
-import com.forero.parking.openapi.model.ParkingRequestDto;
 import com.forero.parking.openapi.model.ParkingVehiclesResponseDto;
 import com.forero.parking.openapi.model.VehicleDto;
 import org.mapstruct.Mapper;
@@ -42,10 +41,4 @@ public interface ParkingLotMapper {
     default OffsetDateTime map(final LocalDateTime localDateTime) {
         return localDateTime != null ? OffsetDateTime.of(localDateTime, OffsetDateTime.now().getOffset()) : null;
     }
-
-    @Mapping(target = "partner", source = "partnerId")
-    @Mapping(target = "name", source = "parkingName")
-    ParkingLot toModel(ParkingRequestDto parkingRequestDto);
-
-    ParkingLotEntity toEntity(ParkingLot parkingLot);
 }

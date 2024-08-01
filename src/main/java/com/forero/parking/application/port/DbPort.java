@@ -1,6 +1,7 @@
 package com.forero.parking.application.port;
 
 import com.forero.parking.domain.model.History;
+import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.domain.model.Vehicle;
 
@@ -24,5 +25,5 @@ public interface DbPort {
 
     List<ParkingLot> getVehiclesInParking();
 
-    int saveParking(ParkingLot parkingLot);
+    int saveParking(Parking parking);
 }

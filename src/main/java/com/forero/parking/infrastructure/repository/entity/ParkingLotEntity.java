@@ -30,10 +30,4 @@ public class ParkingLotEntity {
 
     @Column(name = "entrance_date")
     private LocalDateTime entranceDate;
-
-    @Column(name = "partner_id")
-    private String partnerId;
-
-    @Column(name = "name")
-    private String parkingName;
 }

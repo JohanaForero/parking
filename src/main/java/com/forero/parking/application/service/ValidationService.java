@@ -17,13 +17,13 @@ public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfigu
         }
     }
 
-    public void validateParkingLotFree(final long parkingLotId) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotById(parkingLotId);
-        if (parkingLot != null && parkingLot.getVehicle() != null) {
-            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free",
-                    parkingLot.getId()));
-        }
-    }
+//    public void validateParkingLotFree(final long parkingLotId) {
+//        final ParkingLot parkingLot = this.dbPort.getParkingLotById(parkingLotId);
+//        if (parkingLot != null && parkingLot.getVehicle() != null) {
+//            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free",
+//                    parkingLot.getId()));
+//        }
+//    }
 
     public void validateVehicleNotInside(final String licensePlate) {
         final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);

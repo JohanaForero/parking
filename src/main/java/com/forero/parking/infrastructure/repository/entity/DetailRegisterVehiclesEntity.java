@@ -16,13 +16,6 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
-//@Entity
-//@Table(name = "detailRegisterVehicles",
-//        indexes = {
-//                @Index(name = "parkingLotId_vehicleId_entranceDate_index", columnList = "parking_lot_id, vehicle_id, " +
-//                        "entrance_date", unique = true)
-//        }
-//)
 @Entity
 @Table(name = "Detail_register_vehicles")
 public class DetailRegisterVehiclesEntity {

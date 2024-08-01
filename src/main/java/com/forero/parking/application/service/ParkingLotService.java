@@ -16,14 +16,23 @@ import java.time.LocalDateTime;
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
                                 GlobalConfiguration globalConfiguration, TimeConfiguration timeConfiguration) {
 
-    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
-        this.validationService.validateParkingLotExists(parkingLot.getId());
-        this.validationService.validateParkingLotFree(parkingLot.getId());
-        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
-
-        this.dbPort.registerVehicleEntry(parkingLot, vehicle);
+    public History registerVehicleEntry(ParkingLot parkingLot) {
+        final String licensePlate = parkingLot.getVehicle().getLicensePlate();
+        this.validationService.validateVehicleNotInside(licensePlate);
+        this.dbPort.registerVehicleEntry(parkingLot);
+        parkingLot = this.dbPort.registerVehicleEntry(parkingLot);
+//        return this.dbPort.registerHistoryEntry(parkingLot);
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
+
+//    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
+//        this.validationService.validateParkingLotExists(parkingLot.getId());
+//        this.validationService.validateParkingLotFree(parkingLot.getId());
+//        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
+//
+//        parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
+//        return this.dbPort.registerHistoryEntry(parkingLot);
+//    }
 
     public History registerVehicleExit(final ParkingLot parkingLot, final Vehicle vehicle) {
         this.validationService.validateVehicleInParkingLot(vehicle.getLicensePlate(), parkingLot.getId());

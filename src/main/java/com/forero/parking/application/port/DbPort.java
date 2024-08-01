@@ -21,7 +21,5 @@ public interface DbPort {
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
-//    List<Vehicle> getVehiclesInParkingLot(String parkingLotName);
-
     Long save(ParkingLot parkingLot);
 }

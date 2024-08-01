@@ -38,10 +38,6 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
                 departureDate, totalPaid);
     }
 
-//    public List<Vehicle> getVehiclesInParking(final String parkingName) {
-//        return this.dbPort.getVehiclesInParkingLot(parkingName);
-//    }
-
     private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate) {
         final Duration duration = Duration.between(entranceDate, departureDate);
         final long minutes = duration.toSeconds();

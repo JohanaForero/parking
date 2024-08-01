@@ -108,8 +108,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
-
-
   /:
     post:
       tags:
@@ -138,11 +136,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
-
-
-
-
-
 components:
   securitySchemes:
     bearerAuth:
@@ -164,15 +157,17 @@ components:
     ParkingEntranceRequest:
       required:
         - licensePlate
-        - parkingLotId
+        - parkingName
       type: object
       description: Data required to enter a vehicle into the parking lot
       additionalProperties: false
       properties:
         licensePlate:
           $ref: '#/components/schemas/licensePlate'
-        parkingLotId:
-          $ref: '#/components/schemas/parkingLotId'
+        parkingName:
+          type: string
+          description: Parking name
+          example: PARKING LOT HIRE ME
     ParkingEntranceResponse:
       required:
         - id

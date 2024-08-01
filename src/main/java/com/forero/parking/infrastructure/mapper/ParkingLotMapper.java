@@ -12,32 +12,9 @@ import java.time.OffsetDateTime;
 
 @Mapper
 public interface ParkingLotMapper {
-    @Mapping(target = "id", source = "parkingLotId")
-    @Mapping(target = "vehicle", ignore = true)
-    @Mapping(target = "entranceDate", ignore = true)
-    ParkingLot toDomain(Long parkingLotId);
-
     ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
 
-    //    @Mapping(target = "id", source = "parkingLotId")
-//    @Mapping(target = "vehicle", ignore = true)
-//    @Mapping(target = "entranceDate", ignore = true)
     ParkingLot toModel(ParkingLotEntity parkingLotId);
-
-//    ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
-//
-//    default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {
-//        if (parkingLots == null) {
-//            return null;
-//        }
-//
-//        final ParkingVehiclesResponseDto parkingVehiclesResponseDto = new ParkingVehiclesResponseDto();
-//        parkingVehiclesResponseDto.vehicles(this.toDtos(parkingLots));
-//
-//        return parkingVehiclesResponseDto;
-//    }
-
-//    List<VehicleDto> toDtos(List<ParkingLot> parkingLots);
 
     @Mapping(target = "id", source = "vehicle.id")
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")

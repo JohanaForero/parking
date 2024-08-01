@@ -13,4 +13,8 @@ public class ParkingLot {
     private Vehicle vehicle;
 
     private LocalDateTime entranceDate;
+
+    private String name;
+
+    private String partner;
 }

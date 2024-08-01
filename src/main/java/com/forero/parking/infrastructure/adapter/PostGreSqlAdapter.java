@@ -5,14 +5,11 @@ import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.domain.model.Vehicle;
-import com.forero.parking.infrastructure.mapper.DetailRegisterVehicleMapper;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
-import com.forero.parking.infrastructure.repository.DetailRegisterVehiclesRepository;
 import com.forero.parking.infrastructure.repository.HistoryRepository;
 import com.forero.parking.infrastructure.repository.ParkingLotRepository;
 import com.forero.parking.infrastructure.repository.VehicleRepository;
-import com.forero.parking.infrastructure.repository.entity.DetailRegisterVehiclesEntity;
 import com.forero.parking.infrastructure.repository.entity.HistoryEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
 import com.forero.parking.infrastructure.repository.entity.VehicleEntity;
@@ -21,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,12 +33,11 @@ public class PostGreSqlAdapter implements DbPort {
     private final DetailRegisterVehicleMapper detailRegisterVehicleMapper;
 
     @Override
-    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot) {
-        final String licensePlate = parkingLot.getVehicle().getLicensePlate();
-        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(licensePlate)
+    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot, final Vehicle vehicle) {
+        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(vehicle.getLicensePlate())
                 .orElseGet(() -> {
                     final VehicleEntity newVehicleEntity = new VehicleEntity();
-                    newVehicleEntity.setLicensePlate(licensePlate);
+                    newVehicleEntity.setLicensePlate(vehicle.getLicensePlate());
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
         ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
@@ -86,26 +83,21 @@ public class PostGreSqlAdapter implements DbPort {
     public ParkingLot getParkingLotById(final long parkingLotId) {
         final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLotId)
                 .orElse(null);
-        return this.detailRegisterVehicleMapper.toDomain(parkingLotEntity);
+        return this.parkingLotMapper.toDomain(parkingLotEntity);
     }
 
     @Override
     public LocalDateTime registerVehicleExit(final ParkingLot parkingLot) {
-        final DetailRegisterVehiclesEntity detailRegisterVehiclesEntity =
-                this.getDetailByVehicleLicensePlate(parkingLot.getVehicle());
-        final LocalDateTime entranceDate = detailRegisterVehiclesEntity.getEntranceDate();
+        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
+                .orElse(new ParkingLotEntity());
 
-        detailRegisterVehiclesEntity.setVehicle(null);
-        detailRegisterVehiclesEntity.setEntranceDate(null);
-        this.detailRegisterVehiclesRepository.save(detailRegisterVehiclesEntity);
+        final LocalDateTime entranceDate = parkingLotEntity.getEntranceDate();
+
+        parkingLotEntity.setVehicle(null);
+        parkingLotEntity.setEntranceDate(null);
+        this.parkingLotRepository.save(parkingLotEntity);
 
         return entranceDate;
-    }
-
-
-    private DetailRegisterVehiclesEntity getDetailByVehicleLicensePlate(final Vehicle vehicle) {
-        return this.detailRegisterVehiclesRepository.findByVehicle_LicensePlate(vehicle.getLicensePlate())
-                .orElseThrow(RuntimeException::new);
     }
 
     @Override
@@ -120,6 +112,14 @@ public class PostGreSqlAdapter implements DbPort {
                     return this.historyMapper.toDomain(historyEntity);
                 })
                 .orElse(null);
+    }
+
+    @Override
+    public List<ParkingLot> getVehiclesInParking() {
+        return this.parkingLotRepository.findByVehicleIsNotNull()
+                .stream()
+                .map(this.parkingLotMapper::toDomain)
+                .toList();
     }
 
     @Override

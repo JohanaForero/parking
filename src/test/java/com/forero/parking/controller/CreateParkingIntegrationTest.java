@@ -17,7 +17,7 @@ class CreateParkingIntegrationTest extends BaseIT {
     private static final String BASE_PATH = "/parking/";
 
     private int parkingId() {
-        final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking_lot WHERE name = ?",
+        final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking WHERE name = ?",
                 Integer.class, "parking_1");
         return id != null ? id : 0;
     }
@@ -29,8 +29,6 @@ class CreateParkingIntegrationTest extends BaseIT {
         parkingRequestDto.setParkingName("parking_1");
         parkingRequestDto.setPartnerId("6899454");
 
-        final ParkingResponseDto expected = new ParkingResponseDto();
-        expected.setParkingId(this.parkingId());
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
@@ -38,6 +36,9 @@ class CreateParkingIntegrationTest extends BaseIT {
                 .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
                 .content(OBJECT_MAPPER.writeValueAsBytes(parkingRequestDto)));
 
+        final ParkingResponseDto expected = new ParkingResponseDto();
+        expected.setParkingId(this.parkingId());
+        
         //Then
         response.andExpect(MockMvcResultMatchers.status().isCreated());
         final String body = response.andReturn().getResponse().getContentAsString();

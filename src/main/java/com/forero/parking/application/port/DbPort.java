@@ -5,6 +5,7 @@ import com.forero.parking.domain.model.ParkingLot;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface DbPort {
 
@@ -22,4 +23,6 @@ public interface DbPort {
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
     Long save(ParkingLot parkingLot);
+
+    List<ParkingLot> getVehiclesInParking();
 }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
@@ -19,20 +20,9 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
     public History registerVehicleEntry(ParkingLot parkingLot) {
         final String licensePlate = parkingLot.getVehicle().getLicensePlate();
         this.validationService.validateVehicleNotInside(licensePlate);
-        this.dbPort.registerVehicleEntry(parkingLot);
         parkingLot = this.dbPort.registerVehicleEntry(parkingLot);
-//        return this.dbPort.registerHistoryEntry(parkingLot);
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
-
-//    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
-//        this.validationService.validateParkingLotExists(parkingLot.getId());
-//        this.validationService.validateParkingLotFree(parkingLot.getId());
-//        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
-//
-//        parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
-//        return this.dbPort.registerHistoryEntry(parkingLot);
-//    }
 
     public History registerVehicleExit(final ParkingLot parkingLot, final Vehicle vehicle) {
         this.validationService.validateVehicleInParkingLot(vehicle.getLicensePlate(), parkingLot.getId());
@@ -45,6 +35,10 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
 
         return this.dbPort.registerHistoryExit(vehicle.getLicensePlate(), parkingLot.getId(), entranceDate,
                 departureDate, totalPaid);
+    }
+
+    public List<ParkingLot> getVehiclesInParking() {
+        return this.dbPort.getVehiclesInParking();
     }
 
     private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate) {

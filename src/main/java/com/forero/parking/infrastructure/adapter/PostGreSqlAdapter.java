@@ -43,7 +43,7 @@ public class PostGreSqlAdapter implements DbPort {
                     newVehicleEntity.setLicensePlate(licensePlate);
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
-        DetailRegisterVehiclesEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
+        ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
                 .orElseGet(() -> {
                     final ParkingLotEntity newParkingLotEntity = new ParkingLotEntity();
                     newParkingLotEntity.setId(parkingLot.getId());
@@ -77,7 +77,7 @@ public class PostGreSqlAdapter implements DbPort {
 
     @Override
     public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findByVehicle_LicensePlate(licensePlate)
+        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findByVehicleLicensePlate(licensePlate)
                 .orElse(null);
         return this.parkingLotMapper.toDomain(parkingLotEntity);
     }

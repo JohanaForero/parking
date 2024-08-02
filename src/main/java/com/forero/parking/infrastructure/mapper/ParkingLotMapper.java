@@ -41,4 +41,5 @@ public interface ParkingLotMapper {
     default OffsetDateTime map(final LocalDateTime localDateTime) {
         return localDateTime != null ? OffsetDateTime.of(localDateTime, OffsetDateTime.now().getOffset()) : null;
     }
+
 }

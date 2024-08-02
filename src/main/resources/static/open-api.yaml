@@ -131,11 +131,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/ParkingResponse'
         400:
-          description: Bad Request - If the resource is misspelled (badly constructed URI) If the data in the request is not correct.
+          description: Bad Request - If the resource is misspelled (badly constructed URI) If the data
+            in the request is not correct.
+            / If the parking name exists, return ParkingNameAlreadyExistsException.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+  /parkings:
+    get:
+      tags:
+        - Parking
+      summary: Parking available
+      description: Get the Parkings
+      operationId: getParkings
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: The parking have been listed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingsResponse'
 components:
   securitySchemes:
     bearerAuth:
@@ -319,3 +337,29 @@ components:
           type: integer
           description: parking id
           example: 123
+    ParkingsResponse:
+      type: object
+      required:
+        - parking
+      properties:
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Parking'
+      description: List of parking
+    Parking:
+      required:
+        - parkingId
+        - parkingName
+      type: object
+      description: Data required to list parking
+      additionalProperties: false
+      properties:
+        parkingId:
+          type: integer
+          description: Parking id
+          example: 123
+        parkingName:
+          type: string
+          description: Parking name
+          example: PARKING LOT HIRE ME

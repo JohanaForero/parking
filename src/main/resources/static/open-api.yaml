@@ -161,6 +161,16 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    # Properties
+    parkingName:
+      type: string
+      description: Parking name
+      example: PARKING LOT HIRE ME
+    parkingId:
+      type: integer
+      description: parking id
+      example: 123
+    # Objects
     ErrorObject:
       type: object
       additionalProperties: false
@@ -251,9 +261,7 @@ components:
           description: Email message
           example: Parking lot entry.
         parkingName:
-          type: string
-          description: Parking name
-          example: PARKING LOT HIRE ME
+          $ref: '#/components/schemas/parkingName'
     ParkingEmailResponse:
       required:
         - message
@@ -334,19 +342,17 @@ components:
       description: Response successfully and the parking lot Id
       properties:
         parkingId:
-          type: integer
-          description: parking id
-          example: 123
+          $ref: '#/components/schemas/parkingId'
     ParkingsResponse:
       type: object
       required:
         - parking
       properties:
-        vehicles:
+        parking:
           type: array
+          description: List of parking
           items:
             $ref: '#/components/schemas/Parking'
-      description: List of parking
     Parking:
       required:
         - parkingId
@@ -356,10 +362,6 @@ components:
       additionalProperties: false
       properties:
         parkingId:
-          type: integer
-          description: Parking id
-          example: 123
+          $ref: '#/components/schemas/parkingId'
         parkingName:
-          type: string
-          description: Parking name
-          example: PARKING LOT HIRE ME
+          $ref: '#/components/schemas/parkingName'

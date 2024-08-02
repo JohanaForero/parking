@@ -4,7 +4,6 @@ import com.forero.parking.application.configuration.GlobalConfiguration;
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
-import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.domain.model.Vehicle;
 import org.springframework.stereotype.Service;
@@ -49,10 +48,5 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         final long minutes = duration.toSeconds();
         final double hoursRounded = Math.ceil(minutes / 3600.0);
         return this.globalConfiguration.getCostPerHour().multiply(BigDecimal.valueOf(hoursRounded));
-    }
-
-    public int createParking(final Parking parking) {
-        this.validationService.validateParkingNameAvailability(parking.getName());
-        return this.dbPort.saveParking(parking);
     }
 }

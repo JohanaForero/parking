@@ -18,15 +18,18 @@ import com.forero.parking.infrastructure.repository.entity.ParkingEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
 import com.forero.parking.infrastructure.repository.entity.VehicleEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class PostGreSqlAdapter implements DbPort {
+    private static final String LOGGER_PREFIX = String.format("[%s] ", PostGreSqlAdapter.class.getSimpleName());
     private final VehicleRepository vehicleRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingRepository parkingRepository;
@@ -127,9 +130,17 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public int saveParking(Parking parking) {
+    public int saveParking(final Parking parking) {
         ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
         ParkingEntity entity = this.parkingRepository.save(parkingEntity);
         return entity.getId().intValue();
+    }
+
+    @Override
+    public boolean existsParkingName(String parkingName) {
+        log.info(LOGGER_PREFIX + "[existsParkingName] Request {}", parkingName);
+        boolean result = this.parkingRepository.existsByParkingName(parkingName);
+        log.info(LOGGER_PREFIX + "[existsParkingName] Response {}", result);
+        return !result;
     }
 }

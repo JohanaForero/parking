@@ -5,6 +5,7 @@ import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EmailException;
 import com.forero.parking.domain.exception.EntranceException;
+import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.ParkingLot;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,13 @@ public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfigu
         if (parkingLot == null || parkingLot.getId() != parkingLotId) {
             throw new DepartureException.VehicleNotInParkingLotException(String.format("Vehicle with license plate " +
                     "%s is not in parking lot %s", licensePlate, parkingLotId));
+        }
+    }
+
+    public void validateParkingNameAvailability(final String parkingName) {
+        if (!this.dbPort.existsParkingName(parkingName)) {
+            throw new ParkingException.ParkingNameAlreadyExistsException((String.format("Parking with name %s it " +
+                    "already exists", parkingName)));
         }
     }
 }

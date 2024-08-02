@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface ParkingMapper {
     @Mapping(target = "name", source = "parkingName")
+    @Mapping(target = "id", ignore = true)
     Parking toModel(ParkingRequestDto parkingRequestDto);
 
     @Mapping(target = "parkingName", source = "name")

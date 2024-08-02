@@ -28,7 +28,8 @@ class CreateParkingIntegrationTest extends BaseIT {
         final ParkingRequestDto parkingRequestDto = new ParkingRequestDto();
         parkingRequestDto.setParkingName("parking_1");
         parkingRequestDto.setPartnerId("6899454");
-
+        parkingRequestDto.setNumberOfParkingLots(500);
+        parkingRequestDto.setCostPerHour(150);
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
@@ -52,7 +53,8 @@ class CreateParkingIntegrationTest extends BaseIT {
         final ParkingRequestDto parkingRequestDto = new ParkingRequestDto();
         parkingRequestDto.setParkingName("parking_2");
         parkingRequestDto.setPartnerId("6899455");
-
+        parkingRequestDto.setNumberOfParkingLots(100);
+        parkingRequestDto.setCostPerHour(120);
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))

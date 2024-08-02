@@ -286,6 +286,8 @@ components:
       required:
         - partnerId
         - parkingName
+        - costPerHour
+        - numberOfParkingLots
       type: object
       description: Data required to create parking
       additionalProperties: false
@@ -298,6 +300,14 @@ components:
           type: string
           description: Parking name
           example: PARKING LOT HIRE ME
+        costPerHour:
+          type: integer
+          description: Cost per hour of a parking lot.
+          example: 1232
+        numberOfParkingLots:
+          type: integer
+          description: Number of parking lots within a parking lot.
+          example: 100
     ParkingResponse:
       required:
         - parkingId

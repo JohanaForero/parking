@@ -11,4 +11,8 @@ public class Parking {
     private String name;
 
     private String partnerId;
+
+    private int costPerHour;
+
+    private int numberOfParkingLots;
 }

@@ -26,4 +26,6 @@ public interface DbPort {
     List<ParkingLot> getVehiclesInParking();
 
     int saveParking(Parking parking);
+
+    boolean existsParkingName(String parkingName);
 }

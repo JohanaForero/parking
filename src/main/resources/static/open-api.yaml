@@ -108,7 +108,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
-  /:
+  /centralParking/:
     post:
       tags:
         - Parking
@@ -138,7 +138,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
-  /parkings:
+  /centralParking/parkings:
     get:
       tags:
         - Parking

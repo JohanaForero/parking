@@ -3,9 +3,10 @@ package com.forero.parking.infrastructure.controller;
 import com.forero.parking.application.service.ParkingLotService;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.infrastructure.mapper.ParkingMapper;
-import com.forero.parking.openapi.api.DefaultApi;
+import com.forero.parking.openapi.api.CentralParkingApi;
 import com.forero.parking.openapi.model.ParkingRequestDto;
 import com.forero.parking.openapi.model.ParkingResponseDto;
+import com.forero.parking.openapi.model.ParkingsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${openapi.aPIDocumentation.base-path}")
-public class ParkingController implements DefaultApi {
+public class ParkingController implements CentralParkingApi {
     private static final String LOGGER_PREFIX = String.format("[%s] ", ParkingController.class.getSimpleName());
     private final ParkingMapper parkingMapper;
     private final ParkingLotService parkingLotService;
 
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ParkingResponseDto> createParking(ParkingRequestDto parkingRequestDto) {
+    public ResponseEntity<ParkingResponseDto> createParking(final ParkingRequestDto parkingRequestDto) {
         log.info(LOGGER_PREFIX + "[createParking] Request {}", parkingRequestDto);
         final Parking parking = this.parkingMapper.toModel(parkingRequestDto);
         final int parkingId = this.parkingLotService.createParking(parking);
@@ -33,5 +34,10 @@ public class ParkingController implements DefaultApi {
         parkingResponseDto.setParkingId(parkingId);
         log.info(LOGGER_PREFIX + "[createParking] Response {}", parkingResponseDto);
         return new ResponseEntity<>(parkingResponseDto, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<ParkingsResponseDto> getParkings() {
+        return CentralParkingApi.super.getParkings();
     }
 }

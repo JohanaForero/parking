@@ -47,7 +47,7 @@ class CreateParkingIntegrationTest extends BaseIT {
         final ParkingResponseDto actual = OBJECT_MAPPER.readValue(body, ParkingResponseDto.class);
         Assertions.assertEquals(expected, actual);
     }
-    
+
     @Test
     void test_createParking_withRequestWithParkingNameDuplicate_shouldExceptionParkingNameAlreadyExistsException()
             throws Exception {
@@ -76,4 +76,5 @@ class CreateParkingIntegrationTest extends BaseIT {
         final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
         Assertions.assertEquals(expected, actual);
     }
+
 }

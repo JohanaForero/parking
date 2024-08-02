@@ -108,6 +108,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+  /:
+    post:
+      tags:
+        - Parking
+      summary: Create Parking
+      description: Create parking only with the administrator role
+      operationId: createParking
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParkingRequest'
+      responses:
+        200:
+          description: The parking has entered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingResponse'
+        400:
+          description: Bad Request - If the resource is misspelled (badly constructed URI) If the data in the request is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
 components:
   securitySchemes:
     bearerAuth:
@@ -254,3 +282,40 @@ components:
       format: int64
       description: Parking lot id
       example: 123
+    ParkingRequest:
+      required:
+        - partnerId
+        - parkingName
+        - costPerHour
+        - numberOfParkingLots
+      type: object
+      description: Data required to create parking
+      additionalProperties: false
+      properties:
+        partnerId:
+          type: string
+          description: Partner id
+          example: 123.oser.Avb
+        parkingName:
+          type: string
+          description: Parking name
+          example: PARKING LOT HIRE ME
+        costPerHour:
+          type: integer
+          description: Cost per hour of a parking lot.
+          example: 1232
+        numberOfParkingLots:
+          type: integer
+          description: Number of parking lots within a parking lot.
+          example: 100
+    ParkingResponse:
+      required:
+        - parkingId
+      type: object
+      additionalProperties: false
+      description: Response successfully and the parking lot Id
+      properties:
+        parkingId:
+          type: integer
+          description: parking id
+          example: 123

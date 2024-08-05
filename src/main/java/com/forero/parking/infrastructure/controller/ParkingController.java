@@ -42,6 +42,7 @@ public class ParkingController implements CentralParkingApi {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('PARTNER')")
     public ResponseEntity<ParkingsResponseDto> getParkings() {
         final String token = JwtTokenExtractor.extractTokenFromHeader();
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);

@@ -39,20 +39,19 @@ public abstract class BaseIT {
                     "h5z36Y2Zf5dd5VL1V47Zv5CWt011J-qJ-UTIkP3jcdKiiu2UkMhvQ3v78AsOZIhEC7uV1FmU3OgOXnOJ6vNJHUr6Gz9c_UhB0rFJ154" +
                     "4pvi5FLR3m5SK5-BjXHXm9hKoSb9G3aIAbL3DfuvD_btkD35A";
 
-    protected static final String PARTNER_TOKEN =
-            "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklGdXFsT1JhbFhtcGlycWxfbnV5ODU5bDNrNk9tZVNVZlJPeTA1Z0dqd3MifQ." +
-                    "eyJleHAiOjk3MjE0NTAzMjksImlhdCI6MTcyMTQyODcyOSwianRpIjoiNjg4ZjYzMTItZWRjMi00NzFkLTlkMTctZmQ1YTVjM2M" +
-                    "1MTM4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6Ij" +
-                    "IyZjU5MGNlLTAxMzEtNDdiZS05NWI3LTM4MWJlZjQyYmJlMiIsInR5cCI6IkJlYXJlciIsImF6cCI6InBhcmtpbmctY2xpZW50I" +
-                    "iwic2lkIjoiMzJlYWExYzktMDk4NC00ODcyLWI3ZjItNWUzMzA5NWFiNGUyIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJy" +
-                    "b2xlcyI6WyJvZmZsaW5lX2FjY2VzcyIsImRlZmF1bHQtcm9sZXMtcGFya2luZyIsInVtYV9hdXRob3JpemF0aW9uIiwiUEFSVE5" +
-                    "FUiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3" +
-                    "VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlL" +
-                    "CJwcmVmZXJyZWRfdXNlcm5hbWUiOiJhZG1pbiIsImdpdmVuX25hbWUiOiIiLCJmYW1pbHlfbmFtZSI6IiIsImVtYWlsIjoiYWRt" +
-                    "aW5AbWFpbC5jb20ifQ.uHxtPwM51RKIMHQ0aw-6EPyd0l5Diwat4tn1jFJrFo8XA3y3RGpDDjCXZuskLrTq30P61Gvm831ljKv6" +
-                    "M44QSpFNDeUQY5khTpgWenlj8-8KgllhJaRwZ9y_tNpHoGe8hwg-CK9LbKEZv5A1JxTeKf0kYjSHhpwLK0RR5YLXX_ARGJ32liN" +
-                    "pGKmR3_vybAQosd7-xbV5MWlRzXuj6LShWijs7e-k4pXR8vORtNkwfQ62AkMsfkn3nh997ecsikKDX36IINygxoiAAIp7_1uXtU" +
-                    "aAjXBEYpZKURRmyTWM7msUAWzOxjJ0YhpRafkOY8M-mM52t7M2cncywzLFZvC5sA";
+    protected static final String PARTNER_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJRnVxbE9SYWxYbXBpc" +
+            "nFsX251eTg1OWwzazZPbWVTVWZST3kwNWdHandzIn0.eyJleHAiOjE3MjI5MDU2MTQsImlhdCI6MTcyMjg4NDAxNCwianRpIjoiZTA1MWFk" +
+            "MWMtY2YwNS00OWRlLTk4YTgtNDU1ZTE4MjkxNGUzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXV" +
+            "kIjoiYWNjb3VudCIsInN1YiI6ImMzMTk4YWJhLWU1OTEtNDVhNC1iNzUxLTc2ODU3MGFkOGZkMCIsInR5cCI6IkJlYXJlciIsImF6cCI6In" +
+            "BhcmtpbmctY2xpZW50Iiwic2lkIjoiZGM4MDM1OWQtZWZlYy00ZDkzLTllZTYtOWNjYTExZTBjYTc3IiwiYWNyIjoiMSIsInJlYWxtX2FjY" +
+            "2VzcyI6eyJyb2xlcyI6WyJQQVJUTkVSIiwib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLXBhcmtpbmciLCJ1bWFfYXV0aG9yaXph" +
+            "dGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1" +
+            "saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Im" +
+            "dlbmVzaXMgbG9wZXoiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJnZW5lc2lzQGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJnZW5lc2lzIiwiZ" +
+            "mFtaWx5X25hbWUiOiJsb3BleiJ9.HVyvu70NZG_tLayAL9UUYaHC-GojMeABTQ45TDiIJyM35yIrmGB66v0rh5jNI1HalweGnUkHAHbkuCv" +
+            "ZqiJuPzJWzsnaovs8kKv0ObAivL1VgNprEaLz2sdks07xM6QATfMigusY69naUf7qH-Kh3hz5rwr2T2iTQus45jlDp8YNlH9L-J_BjqFK5J" +
+            "zGem4alC_o6eNxiCmvSE4U5bk2l7A00CLOAYlkXPXLwEazqrUxwhYSX16X9QdHEhZ73A_cRmnkKyPT6znBDvXyHEoW5CHHV1B9CagcEUweu" +
+            "ZZOQ1SloYJEOEt6aph-8ovxxkkvJd_vUkEPYsj9phDTkRSolA";
 
     @Autowired
     protected MockMvc mockMvc;
@@ -62,7 +61,7 @@ public abstract class BaseIT {
 
     @BeforeEach
     void setup() {
-        this.jdbcTemplate.update("DELETE FROM parkings");
+        this.jdbcTemplate.update("DELETE FROM parking");
         this.jdbcTemplate.update("DELETE FROM history");
         this.jdbcTemplate.update("DELETE FROM parking_lot");
         this.jdbcTemplate.update("DELETE FROM vehicle");

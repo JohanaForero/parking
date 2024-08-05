@@ -33,6 +33,6 @@ public interface ParkingMapper {
 
     List<ParkingDto> parkingListToParkingDtoList(List<Parking> parkings);
 
-    @Mapping(target = "parking", source = "parkings")
+    @Mapping(target = "parkings", source = "parkings")
     ParkingsResponseDto toDto(Integer dummy, List<Parking> parkings);
 }

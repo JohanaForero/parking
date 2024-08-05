@@ -48,6 +48,6 @@ public class ParkingController implements CentralParkingApi {
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
         final List<Parking> parkingList = this.parkingService.getParkings(partnerId);
         final ParkingsResponseDto parkingsResponseDto = this.parkingMapper.toDto(1, parkingList);
-        return new ResponseEntity<>(parkingsResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(parkingsResponseDto);
     }
 }

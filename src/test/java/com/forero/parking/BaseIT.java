@@ -24,6 +24,10 @@ public abstract class BaseIT {
 
     protected static final String BEARER = "Bearer ";
 
+    protected static final String ROLE_PARTNER = "PARTNER";
+
+    protected static final String USERNAME_PARTNER = "genesis@gmail.com";
+
     protected static final String ADMIN_TOKEN =
             "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklGdXFsT1JhbFhtcGlycWxfbnV5ODU" +
                     "5bDNrNk9tZVNVZlJPeTA1Z0dqd3MifQ.eyJleHAiOjk3MjE0NTAzMjksImlhdCI6MTcyMTQyODcyOSwianRpIjoiNjg4ZjYzMTItZWR" +
@@ -40,18 +44,18 @@ public abstract class BaseIT {
                     "4pvi5FLR3m5SK5-BjXHXm9hKoSb9G3aIAbL3DfuvD_btkD35A";
 
     protected static final String PARTNER_TOKEN = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJRnVxbE9SYWxYbXBpc" +
-            "nFsX251eTg1OWwzazZPbWVTVWZST3kwNWdHandzIn0.eyJleHAiOjE3MjI5MDU2MTQsImlhdCI6MTcyMjg4NDAxNCwianRpIjoiZTA1MWFk" +
-            "MWMtY2YwNS00OWRlLTk4YTgtNDU1ZTE4MjkxNGUzIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXV" +
+            "nFsX251eTg1OWwzazZPbWVTVWZST3kwNWdHandzIn0.eyJleHAiOjE3MjI5MTQ5NjksImlhdCI6MTcyMjg5MzM2OSwianRpIjoiNmE0MDk2" +
+            "N2EtZTcyNi00MmYzLTllYzctMGNjOTk3YjM1NTZlIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXV" +
             "kIjoiYWNjb3VudCIsInN1YiI6ImMzMTk4YWJhLWU1OTEtNDVhNC1iNzUxLTc2ODU3MGFkOGZkMCIsInR5cCI6IkJlYXJlciIsImF6cCI6In" +
-            "BhcmtpbmctY2xpZW50Iiwic2lkIjoiZGM4MDM1OWQtZWZlYy00ZDkzLTllZTYtOWNjYTExZTBjYTc3IiwiYWNyIjoiMSIsInJlYWxtX2FjY" +
+            "BhcmtpbmctY2xpZW50Iiwic2lkIjoiOTg3MTMwY2QtZTI2My00YzZlLTg3MjUtMDM4YjA3NzA2M2ZhIiwiYWNyIjoiMSIsInJlYWxtX2FjY" +
             "2VzcyI6eyJyb2xlcyI6WyJQQVJUTkVSIiwib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLXBhcmtpbmciLCJ1bWFfYXV0aG9yaXph" +
             "dGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1" +
-            "saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6Im" +
-            "dlbmVzaXMgbG9wZXoiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJnZW5lc2lzQGdtYWlsLmNvbSIsImdpdmVuX25hbWUiOiJnZW5lc2lzIiwiZ" +
-            "mFtaWx5X25hbWUiOiJsb3BleiJ9.HVyvu70NZG_tLayAL9UUYaHC-GojMeABTQ45TDiIJyM35yIrmGB66v0rh5jNI1HalweGnUkHAHbkuCv" +
-            "ZqiJuPzJWzsnaovs8kKv0ObAivL1VgNprEaLz2sdks07xM6QATfMigusY69naUf7qH-Kh3hz5rwr2T2iTQus45jlDp8YNlH9L-J_BjqFK5J" +
-            "zGem4alC_o6eNxiCmvSE4U5bk2l7A00CLOAYlkXPXLwEazqrUxwhYSX16X9QdHEhZ73A_cRmnkKyPT6znBDvXyHEoW5CHHV1B9CagcEUweu" +
-            "ZZOQ1SloYJEOEt6aph-8ovxxkkvJd_vUkEPYsj9phDTkRSolA";
+            "saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJuYW1lIjoiZ2" +
+            "VuZXNpcyBsb3BleiIsInByZWZlcnJlZF91c2VybmFtZSI6ImdlbmVzaXNAZ21haWwuY29tIiwiZ2l2ZW5fbmFtZSI6ImdlbmVzaXMiLCJmY" +
+            "W1pbHlfbmFtZSI6ImxvcGV6In0.NTMDRL6VpOr8U0fGnRNNDT1TL_lggljkrkhVNqylhVfaNQUBb2yTl_EYltX46bwYL6sLVdZKYGP5_jiS" +
+            "0UCK-Y_T0-GkHS6nLhVLXSsa5cWFr-lNKOwfvKm3CuUVx_h1K5IfOMNMVS8DbDja43CnNiqORzYOan3pnG2foPeo6F_o9GB6OO7bHTWF2pz" +
+            "OuIiBYT5I3sRQflQVe6omzhryLpg0eJLaM99aF3vh85JbThvS41o2tLmBURlsHLiytl_kbT02MAR_N3BUJHFJJ-XL8o1QeEWQb0tJE3vb0T" +
+            "jo0tsMw-UKKzkfBUMyxXPG8WB6y7DUHftlJ65zg1wtzf1buQ";
 
     @Autowired
     protected MockMvc mockMvc;

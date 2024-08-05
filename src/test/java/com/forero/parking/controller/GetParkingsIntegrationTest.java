@@ -6,6 +6,7 @@ import com.forero.parking.openapi.model.ParkingsResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -15,7 +16,7 @@ import java.util.List;
 
 class GetParkingsIntegrationTest extends BaseIT {
 
-    private static final String BASE_PATH = "/parking/centralParking/parkings/";
+    private static final String BASE_PATH = "/parking/centralParking/parkings";
 
     private int parkingId(final String parkingName) {
         final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking WHERE name = ?",
@@ -24,12 +25,13 @@ class GetParkingsIntegrationTest extends BaseIT {
     }
 
     @Test
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void getParkings_withRolePartner_shouldReturnResponseDtoAndStatusOK() throws Exception {
         //Given
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
-                " VALUES (?, ?, ?, ?)", "22f590ce-0131-47be-95b7-381bef42bbe2", "tes1", 1200, 80);
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes1", 1200, 80);
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
-                " VALUES (?, ?, ?, ?)", "22f590ce-0131-47be-95b7-381bef42bbe2", "tes2", 1200, 80);
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes2", 1200, 80);
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "093456736", "tes3", 1200, 80);
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
@@ -48,9 +50,9 @@ class GetParkingsIntegrationTest extends BaseIT {
         expected.setParkings(parkingDtos);
 
         //When
-        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(BASE_PATH)
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.get(BASE_PATH)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, BEARER, PARTNER_TOKEN));
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN));
 
         // Then
         response.andExpect(MockMvcResultMatchers.status().isOk());
@@ -58,5 +60,4 @@ class GetParkingsIntegrationTest extends BaseIT {
         final ParkingsResponseDto actual = OBJECT_MAPPER.readValue(body, ParkingsResponseDto.class);
         Assertions.assertEquals(expected, actual);
     }
-
 }

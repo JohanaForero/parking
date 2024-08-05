@@ -18,6 +18,8 @@ import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -43,6 +45,8 @@ public class ParkingController implements CentralParkingApi {
     public ResponseEntity<ParkingsResponseDto> getParkings() {
         final String token = JwtTokenExtractor.extractTokenFromHeader();
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
-        return CentralParkingApi.super.getParkings();
+        final List<Parking> parkingList = this.parkingService.getParkings(partnerId);
+        final ParkingsResponseDto parkingsResponseDto = this.parkingMapper.toDto(1, parkingList);
+        return new ResponseEntity<>(parkingsResponseDto, HttpStatus.OK);
     }
 }

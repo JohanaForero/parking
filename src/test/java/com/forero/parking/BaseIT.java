@@ -62,7 +62,7 @@ public abstract class BaseIT {
 
     @BeforeEach
     void setup() {
-        this.jdbcTemplate.update("DELETE FROM parking");
+        this.jdbcTemplate.update("DELETE FROM parkings");
         this.jdbcTemplate.update("DELETE FROM history");
         this.jdbcTemplate.update("DELETE FROM parking_lot");
         this.jdbcTemplate.update("DELETE FROM vehicle");

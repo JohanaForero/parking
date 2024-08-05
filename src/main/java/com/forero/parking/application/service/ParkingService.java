@@ -4,7 +4,6 @@ import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.Parking;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,7 +15,6 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public List<Parking> getParkings(final String partnerId) {
-        List<Parking> result = new ArrayList<>();
-        return result;
+        return this.dbPort.findAllParking(partnerId);
     }
 }

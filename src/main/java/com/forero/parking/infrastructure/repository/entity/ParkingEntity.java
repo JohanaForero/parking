@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "parking")
+@Table(name = "parkings")
 public class ParkingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class ParkingEntity {
 
     @Column(name = "Cost_Per_Hour")
     private int costPerHour;
-    
+
     @Column(name = "Number_Of_Parking_Lots")
     private int numberOfParkingLots;
 }

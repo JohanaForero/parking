@@ -28,4 +28,6 @@ public interface DbPort {
     int saveParking(Parking parking);
 
     boolean existsParkingName(String parkingName);
+
+    List<Parking> findAllParking(String partnerId);
 }

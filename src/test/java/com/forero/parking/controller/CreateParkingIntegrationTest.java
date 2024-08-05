@@ -18,7 +18,7 @@ class CreateParkingIntegrationTest extends BaseIT {
     private static final String BASE_PATH = "/parking/centralParking/";
 
     private int parkingId() {
-        final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking WHERE name = ?",
+        final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parkings WHERE name = ?",
                 Integer.class, "parking_2");
         return id != null ? id : 0;
     }
@@ -53,7 +53,7 @@ class CreateParkingIntegrationTest extends BaseIT {
             throws Exception {
         //Given
         final String existingParkingName = "prueba8";
-        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+        this.jdbcTemplate.update("INSERT INTO parkings (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "093456734", existingParkingName, 1200, 80);
         final ParkingRequestDto parkingRequestDto = new ParkingRequestDto();
         parkingRequestDto.setParkingName(existingParkingName);

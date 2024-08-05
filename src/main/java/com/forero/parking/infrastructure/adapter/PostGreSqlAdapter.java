@@ -131,16 +131,24 @@ public class PostGreSqlAdapter implements DbPort {
 
     @Override
     public int saveParking(final Parking parking) {
-        ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
-        ParkingEntity entity = this.parkingRepository.save(parkingEntity);
+        final ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
+        final ParkingEntity entity = this.parkingRepository.save(parkingEntity);
+        log.info(LOGGER_PREFIX + "[saveParking] Response {}", entity);
         return entity.getId().intValue();
     }
 
     @Override
-    public boolean existsParkingName(String parkingName) {
+    public boolean existsParkingName(final String parkingName) {
         log.info(LOGGER_PREFIX + "[existsParkingName] Request {}", parkingName);
-        boolean result = this.parkingRepository.existsByParkingName(parkingName);
+        final boolean result = this.parkingRepository.existsByParkingName(parkingName);
         log.info(LOGGER_PREFIX + "[existsParkingName] Response {}", result);
         return !result;
+    }
+
+    @Override
+    public List<Parking> findAllParking(final String partnerId) {
+        final List<ParkingEntity> parkingEntities = this.parkingRepository.findByPartnerId(partnerId);
+        log.info(LOGGER_PREFIX + "[findAllParking] Response {}", parkingEntities);
+        return this.parkingMapper.toModel(parkingEntities);
     }
 }

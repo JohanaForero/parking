@@ -15,7 +15,7 @@ import java.net.URI;
 
 class CreateParkingIntegrationTest extends BaseIT {
 
-    private static final String BASE_PATH = "/parking/";
+    private static final String BASE_PATH = "/parking/centralParking/";
 
     private int parkingId() {
         final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking WHERE name = ?",
@@ -52,7 +52,7 @@ class CreateParkingIntegrationTest extends BaseIT {
     void test_createParking_withRequestWithParkingNameDuplicate_shouldExceptionParkingNameAlreadyExistsException()
             throws Exception {
         //Given
-        String existingParkingName = "prueba8";
+        final String existingParkingName = "prueba8";
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "093456734", existingParkingName, 1200, 80);
         final ParkingRequestDto parkingRequestDto = new ParkingRequestDto();
@@ -76,5 +76,4 @@ class CreateParkingIntegrationTest extends BaseIT {
         final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
         Assertions.assertEquals(expected, actual);
     }
-
 }

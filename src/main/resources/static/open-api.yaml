@@ -187,7 +187,7 @@ components:
       required:
         - licensePlate
         - parkingLotId
-        - parkingName
+        - parkingId
       type: object
       description: Data required to enter a vehicle into the parking lot
       additionalProperties: false
@@ -196,8 +196,8 @@ components:
           $ref: '#/components/schemas/licensePlate'
         parkingLotId:
           $ref: '#/components/schemas/parkingLotId'
-        parkingName:
-          $ref: '#/components/schemas/parkingName'
+        parkingId:
+          $ref: '#/components/schemas/parkingId'
     ParkingEntranceResponse:
       required:
         - id

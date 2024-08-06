@@ -14,7 +14,7 @@ import java.util.List;
 
 @Mapper
 public interface ParkingLotMapper {
-    @Mapping(target = "parking.name", source = "parkingName")
+    @Mapping(target = "parking.id", source = "parkingId")
     @Mapping(target = "id", source = "parkingLotId")
     ParkingLot toDomain(ParkingEntranceRequestDto parkingEntranceRequestDto);
 

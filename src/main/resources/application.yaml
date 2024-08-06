@@ -41,10 +41,6 @@ resilience4j.circuitbreaker:
       minimumNumberOfCalls: 10
       automaticTransitionFromOpenToHalfOpenEnabled: true
 
-parking:
-  global:
-    cost-per-hour: 1000
-    number-of-parking-lots: 100
 email:
   server:
     url: http://localhost:1080

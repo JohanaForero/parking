@@ -26,7 +26,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -56,11 +55,14 @@ public class PostGreSqlAdapter implements DbPort {
                     newParkingLotEntity.setId(parkingLot.getId());
                     return newParkingLotEntity;
                 });
+        final ParkingEntity parkingEntity = new ParkingEntity();
+        parkingEntity.setId(parkingLot.getParking().getId());
 
         final LocalDateTime entranceDate = this.timeConfiguration.now();
 
         parkingLotEntity.setVehicle(vehicleEntity);
         parkingLotEntity.setEntranceDate(entranceDate);
+        parkingLotEntity.setParking(parkingEntity);
         parkingLotEntity = this.parkingLotRepository.save(parkingLotEntity);
 
         return this.parkingLotMapper.toDomain(parkingLotEntity);
@@ -155,11 +157,11 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public int findParkingId(@NonNull final String parkingName) {
-        log.info(LOGGER_PREFIX, "[findParkingId] Request {}", parkingName);
-        final Optional<ParkingEntity> parkingOptional = this.parkingRepository.findByParkingName(parkingName);
-        return parkingOptional.map(parkingEntity -> parkingEntity.getId().intValue())
-                .orElseThrow(() -> new EntranceException.NotFoundParkingException(""));
+    public int getNumberOfParkingLots(final int parkingId) {
+        log.info(LOGGER_PREFIX, "[getNumberOfParkingLots] Request {}", parkingId);
+        final ParkingEntity parkingEntity = this.parkingRepository.findById((long) parkingId)
+                .orElseThrow(() -> new EntranceException.NotFoundParkingException("Parking lot not found with id: " + parkingId));
+        return parkingEntity.getNumberOfParkingLots();
     }
 
     @Override
@@ -167,6 +169,14 @@ public class PostGreSqlAdapter implements DbPort {
         log.info(LOGGER_PREFIX, "[existsParkingByPartnerId] Request {} {}", parkingId, partnerId);
         final boolean result = this.parkingRepository.existsByIdAndPartnerId(parkingId, partnerId);
         log.info(LOGGER_PREFIX + "[existsParkingByPartnerId] Response {}", result);
+        return !result;
+    }
+
+    @Override
+    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final Long parkingId) {
+        log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
+        final boolean result = this.parkingLotRepository.existsByParkingIdAndVehicleLicensePlate(licensePlate, parkingId);
+        log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", result);
         return !result;
     }
 }

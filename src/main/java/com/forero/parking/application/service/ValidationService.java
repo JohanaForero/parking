@@ -56,4 +56,10 @@ public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfigu
                     "already exists", parkingName)));
         }
     }
+
+    public void validateParkingBelongsToPartner(final int parkingId, final String partnerId) {
+        if (this.dbPort.existsParkingByPartnerId(parkingId, partnerId)) {
+            throw new EntranceException.NotFoundParkingException("This member is not authorized to access this parking lot.");
+        }
+    }
 }

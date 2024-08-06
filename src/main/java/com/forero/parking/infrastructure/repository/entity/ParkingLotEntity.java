@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "parking_lot",
         indexes = {
-                @Index(name = "vehicleId_index", columnList = "vehicle_id", unique = true)
+                @Index(name = "parkingId_vehicleId_index", columnList = "vehicle_id, parking_id", unique = true)
         }
 )
 public class ParkingLotEntity {
@@ -30,4 +30,8 @@ public class ParkingLotEntity {
 
     @Column(name = "entrance_date")
     private LocalDateTime entranceDate;
+
+    @ManyToOne
+    @JoinColumn(name = "parking_id")
+    private ParkingEntity parking;
 }

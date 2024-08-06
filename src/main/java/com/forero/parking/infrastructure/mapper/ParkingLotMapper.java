@@ -2,6 +2,7 @@ package com.forero.parking.infrastructure.mapper;
 
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
+import com.forero.parking.openapi.model.ParkingEntranceRequestDto;
 import com.forero.parking.openapi.model.ParkingVehiclesResponseDto;
 import com.forero.parking.openapi.model.VehicleDto;
 import org.mapstruct.Mapper;
@@ -13,6 +14,10 @@ import java.util.List;
 
 @Mapper
 public interface ParkingLotMapper {
+    @Mapping(target = "parking.name", source = "parkingName")
+    @Mapping(target = "id", source = "parkingLotId")
+    ParkingLot toDomain(ParkingEntranceRequestDto parkingEntranceRequestDto);
+
     @Mapping(target = "id", source = "parkingLotId")
     @Mapping(target = "vehicle", ignore = true)
     @Mapping(target = "entranceDate", ignore = true)

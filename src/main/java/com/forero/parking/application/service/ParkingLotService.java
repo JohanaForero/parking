@@ -17,7 +17,9 @@ import java.util.List;
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
                                 GlobalConfiguration globalConfiguration, TimeConfiguration timeConfiguration) {
 
-    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
+    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle, final String partnerId) {
+        final int parkingId = this.dbPort.findParkingId(parkingLot.getParking().getName());
+        this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         this.validationService.validateParkingLotExists(parkingLot.getId());
         this.validationService.validateParkingLotFree(parkingLot.getId());
         this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());

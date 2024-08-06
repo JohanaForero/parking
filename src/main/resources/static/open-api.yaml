@@ -13,7 +13,7 @@ paths:
       tags:
         - Parking
       summary: Register vehicle entry
-      description: Register vehicle entry
+      description: Register vehicle entry with role partner
       operationId: registerVehicleEntry
       security:
         - bearerAuth: [ ]
@@ -170,6 +170,7 @@ components:
       type: integer
       description: parking id
       example: 123
+
     # Objects
     ErrorObject:
       type: object
@@ -186,6 +187,7 @@ components:
       required:
         - licensePlate
         - parkingLotId
+        - parkingName
       type: object
       description: Data required to enter a vehicle into the parking lot
       additionalProperties: false
@@ -194,6 +196,8 @@ components:
           $ref: '#/components/schemas/licensePlate'
         parkingLotId:
           $ref: '#/components/schemas/parkingLotId'
+        parkingName:
+          $ref: '#/components/schemas/parkingName'
     ParkingEntranceResponse:
       required:
         - id
@@ -323,9 +327,7 @@ components:
           description: Partner id
           example: 123.oser.Avb
         parkingName:
-          type: string
-          description: Parking name
-          example: PARKING LOT HIRE ME
+          $ref: '#/components/schemas/parkingName'
         costPerHour:
           type: integer
           description: Cost per hour of a parking lot.

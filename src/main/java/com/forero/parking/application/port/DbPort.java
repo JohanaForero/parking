@@ -30,4 +30,8 @@ public interface DbPort {
     boolean existsParkingName(String parkingName);
 
     List<Parking> findAllParking(String partnerId);
+
+    int findParkingId(String parkingName);
+
+    boolean existsParkingByPartnerId(int parkingId, String partnerId);
 }

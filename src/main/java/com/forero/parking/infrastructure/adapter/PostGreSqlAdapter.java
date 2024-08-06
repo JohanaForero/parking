@@ -2,6 +2,7 @@ package com.forero.parking.infrastructure.adapter;
 
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
@@ -17,6 +18,7 @@ import com.forero.parking.infrastructure.repository.entity.HistoryEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingEntity;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
 import com.forero.parking.infrastructure.repository.entity.VehicleEntity;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -133,7 +136,6 @@ public class PostGreSqlAdapter implements DbPort {
     public int saveParking(final Parking parking) {
         final ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
         final ParkingEntity entity = this.parkingRepository.save(parkingEntity);
-        log.info(LOGGER_PREFIX + "[saveParking] Response {}", entity);
         return entity.getId().intValue();
     }
 
@@ -150,5 +152,21 @@ public class PostGreSqlAdapter implements DbPort {
         final List<ParkingEntity> parkingEntities = this.parkingRepository.findByPartnerId(partnerId);
         log.info(LOGGER_PREFIX + "[findAllParking] Response {}", parkingEntities);
         return this.parkingMapper.toModel(parkingEntities);
+    }
+
+    @Override
+    public int findParkingId(@NonNull final String parkingName) {
+        log.info(LOGGER_PREFIX, "[findParkingId] Request {}", parkingName);
+        final Optional<ParkingEntity> parkingOptional = this.parkingRepository.findByParkingName(parkingName);
+        return parkingOptional.map(parkingEntity -> parkingEntity.getId().intValue())
+                .orElseThrow(() -> new EntranceException.NotFoundParkingException(""));
+    }
+
+    @Override
+    public boolean existsParkingByPartnerId(final int parkingId, @NonNull final String partnerId) {
+        log.info(LOGGER_PREFIX, "[existsParkingByPartnerId] Request {} {}", parkingId, partnerId);
+        final boolean result = this.parkingRepository.existsByIdAndPartnerId(parkingId, partnerId);
+        log.info(LOGGER_PREFIX + "[existsParkingByPartnerId] Response {}", result);
+        return !result;
     }
 }

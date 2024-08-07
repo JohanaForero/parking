@@ -15,4 +15,8 @@ public class ParkingLot {
     private LocalDateTime entranceDate;
 
     private Parking parking;
+
+    public Long getParkingId() {
+        return this.parking.getId();
+    }
 }

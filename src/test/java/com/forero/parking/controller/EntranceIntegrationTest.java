@@ -1,10 +1,14 @@
 package com.forero.parking.controller;
 
 import com.forero.parking.BaseIT;
+import com.forero.parking.openapi.model.ErrorObjectDto;
 import com.forero.parking.openapi.model.ParkingEntranceRequestDto;
 import com.forero.parking.openapi.model.ParkingEntranceResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
@@ -12,160 +16,179 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URI;
-import java.util.Random;
+import java.util.stream.Stream;
 
 class EntranceIntegrationTest extends BaseIT {
     private static final String BASE_PATH = "/parking/entrance";
-//
-//    private static Stream<Arguments> provideInvalidParameters() {
-//        return Stream.of(
-//                Arguments.of("Without the licence plate", new ParkingEntranceRequestDto(null, 1L), "licensePlate"),
-//                Arguments.of("Without the parking lot id", new ParkingEntranceRequestDto("ABC123", null),
-//                        "parkingLotId"),
-//                Arguments.of("Wit special character on licence plate", new ParkingEntranceRequestDto("ABC-123", 1L),
-//                        "licensePlate"),
-//                Arguments.of("Wit more than 6 character on licence plate", new ParkingEntranceRequestDto("ABC123123",
-//                        1L), "licensePlate"),
-//                Arguments.of("Wit ñ on licence plate", new ParkingEntranceRequestDto("ABñ123", 1L), "licensePlate"),
-//                Arguments.of("Wit Ñ on licence plate", new ParkingEntranceRequestDto("ABÑ123", 1L), "licensePlate")
-//        );
-//    }
-//
-//    public static Stream<Arguments> provideParkingLotNotExists() {
-//        return Stream.of(
-//                Arguments.of("Without quantity greater than the existing", 100),
-//                Arguments.of("Without id 0", 0)
-//        );
-//    }
-//
-//    @Test
-//    void test_RegisterVehicleEntry_withoutBody_shouldThrowBadRequest() throws Exception {
-//        //Given
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message("Required request body");
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource("provideParkingLotNotExists")
-//    void test_RegisterVehicleEntry_withParkingLotNotExists_shouldThrowBadRequest(final String testName,
-//                                                                                 final long parkingLotId) throws Exception {
-//        //Given
-//        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
-//        parkingEntranceRequestDto.setLicensePlate("ABc123");
-//        parkingEntranceRequestDto.setParkingLotId(parkingLotId);
-//
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message(String.format("Parking lot %d not found", parkingLotId));
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
-//                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
-//
-//    @Test
-//    void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
-//        //Given
-//        final long occupiedParkingLotId = 1;
-//        this.jdbcTemplate.update("INSERT INTO vehicle (id, license_plate) VALUES (?, ?)", 1, "ABc123");
-//        this.jdbcTemplate.update("INSERT INTO parking_lot (id, vehicle_id, entrance_date) VALUES (?, ?, ?)", occupiedParkingLotId, 1,
-//                "2024-07-20 15:31:11.141046");
-//        this.jdbcTemplate.update("INSERT INTO history (id, parking_lot_id, vehicle_id, entrance_date) VALUES (?, ?, " +
-//                "?, ?)", 1, occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046");
-//
-//        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
-//        parkingEntranceRequestDto.setLicensePlate("ABc1");
-//        parkingEntranceRequestDto.setParkingLotId(occupiedParkingLotId);
-//
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message(String.format("Parking lot %d is not free", occupiedParkingLotId));
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
-//                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
-//
-//    @Test
-//    void test_RegisterVehicleEntry_withVehicleInside_shouldThrowBadRequest() throws Exception {
-//        //Given
-//        final String licensePlate = "123ABc";
-//        final long occupiedParkingLotId = 1;
-//        this.jdbcTemplate.update("INSERT INTO vehicle (id, license_plate) VALUES (?, ?)", 1, licensePlate);
-//        this.jdbcTemplate.update("INSERT INTO parking_lot (id, vehicle_id, entrance_date) VALUES (?, ?, ?)", occupiedParkingLotId, 1,
-//                "2024-07-20 15:31:11.141046");
-//        this.jdbcTemplate.update("INSERT INTO history (id, parking_lot_id, vehicle_id, entrance_date) VALUES (?, ?, " +
-//                "?, ?)", 1, occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046");
-//
-//        final long parkingLotId = this.generateRandomParkingLotWithExclusion(occupiedParkingLotId);
-//
-//        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
-//        parkingEntranceRequestDto.setLicensePlate(licensePlate);
-//        parkingEntranceRequestDto.setParkingLotId(parkingLotId);
-//
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message(String.format("Vehicle with license plate %s is already inside in parking lot %d",
-//                licensePlate, occupiedParkingLotId));
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
-//                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource("provideInvalidParameters")
-//    void test_RegisterVehicleEntry_withInvalidParameters_shouldThrowBadRequest(final String testName,
-//                                                                               final ParkingEntranceRequestDto parkingEntranceRequestDto,
-//                                                                               final String field) throws Exception {
-//        //Given
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message(String.format("Invalid %s parameters", field));
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
-//                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
+
+    public static Stream<Arguments> prohibitedFormatLicense() {
+        return Stream.of(
+                Arguments.of("Without the licence plate", null),
+                Arguments.of("Wit ñ on licence plate", "ABÑ123"),
+                Arguments.of("Wit more than 6 character on licence plate", "ABC123123"),
+                Arguments.of("Wit special character on licence plate", "ABC123123")
+        );
+    }
+
+    public static Stream<Arguments> provideParkingLotNotExists() {
+        return Stream.of(
+                Arguments.of("Without quantity greater than the existing", 100),
+                Arguments.of("Without id 0", 0)
+        );
+    }
+
+    @Test
+    void test_RegisterVehicleEntry_withoutBody_shouldThrowBadRequest() throws Exception {
+        //Given
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message("Required request body");
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideParkingLotNotExists")
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withParkingLotNotExists_shouldThrowBadRequest(final String testName,
+                                                                                 final long parkingLotId) throws Exception {
+        //Give
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test12", 1200, 80);
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate("ABc123");
+        parkingEntranceRequestDto.setParkingLotId(parkingLotId);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("test12"));
+
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message(String.format("Parking lot %d not found", parkingEntranceRequestDto.getParkingLotId()));
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
+        //Given
+        final long occupiedParkingLotId = 14;
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test7", 1200, 80);
+        final long parkingId = this.parkingId("test7");
+        this.jdbcTemplate.update("INSERT INTO vehicle (id, license_plate) VALUES (?, ?)", 1, "ABc123");
+        this.jdbcTemplate.update("INSERT INTO parking_lot (id, vehicle_id, entrance_date, parking_id) VALUES (?, ?, " +
+                "?, ?)", occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046", parkingId);
+        this.jdbcTemplate.update("INSERT INTO history (id, parking_lot_id, vehicle_id, entrance_date) VALUES (?, ?, " +
+                "?, ?)", 1, occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046");
+
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate("ABC341");
+        parkingEntranceRequestDto.setParkingLotId(occupiedParkingLotId);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("test7"));
+
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message(String.format("Parking lot %d is not free", occupiedParkingLotId));
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withVehicleInside_shouldThrowBadRequest() throws Exception {
+        //Given
+        final String licensePlate = "123ABc";
+        final long occupiedParkingLotId = 21;
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test6", 1200, 80);
+        final long parkingId = this.parkingId("test6");
+        this.jdbcTemplate.update("INSERT INTO vehicle (id, license_plate) VALUES (?, ?)", 1, licensePlate);
+        this.jdbcTemplate.update("INSERT INTO parking_lot (id, vehicle_id, entrance_date, parking_id) VALUES (?, ?, " +
+                "?, ?)", occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046", parkingId);
+        this.jdbcTemplate.update("INSERT INTO history (id, parking_lot_id, vehicle_id, entrance_date) VALUES (?, ?, " +
+                "?, ?)", 1, occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046");
+
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate(licensePlate);
+        parkingEntranceRequestDto.setParkingLotId(2L);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("test6"));
+
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message(String.format("Vehicle with license plate %s is already inside in parking %d",
+                licensePlate, parkingId));
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("prohibitedFormatLicense")
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withInvalidLicensePlateInvalid_shouldThrowBadRequest(final String testName,
+                                                                                        final String licensePlate) throws Exception {
+        //Given
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes3", 1200, 80);
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate(licensePlate);
+        parkingEntranceRequestDto.setParkingLotId(32L);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("tes3"));
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message("Invalid licensePlate parameters");
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    private int parkingId(final String parkingName) {
+        final Integer id = this.jdbcTemplate.queryForObject("SELECT id FROM parking WHERE name = ?",
+                Integer.class, parkingName);
+        return id != null ? id : 0;
+    }
 
     @Test
     @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
@@ -174,9 +197,9 @@ class EntranceIntegrationTest extends BaseIT {
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes2", 1200, 80);
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
-        parkingEntranceRequestDto.setLicensePlate("ABc123");
-        parkingEntranceRequestDto.setParkingLotId(2L);
-        parkingEntranceRequestDto.setParkingName("tes2");
+        parkingEntranceRequestDto.setLicensePlate("ABC123");
+        parkingEntranceRequestDto.setParkingLotId(54L);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("tes2"));
 
         final long idOfLastHistory = this.getIdOfLastHistory();
 
@@ -201,13 +224,4 @@ class EntranceIntegrationTest extends BaseIT {
         return id != null ? id : 0;
     }
 
-    private long generateRandomParkingLotWithExclusion(final long parkingLotExcluded) {
-        final Random random = new Random();
-        int parkingLotIdGenerated;
-        do {
-            parkingLotIdGenerated = random.nextInt(3) + 1;
-        } while (parkingLotIdGenerated == parkingLotExcluded);
-
-        return parkingLotIdGenerated;
-    }
 }

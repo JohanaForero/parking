@@ -17,13 +17,16 @@ public interface ParkingLotMapper {
     @Mapping(target = "parking.id", source = "parkingId")
     @Mapping(target = "id", source = "parkingLotId")
     @Mapping(target = "vehicle.licensePlate", source = "licensePlate")
+    @Mapping(target = "entranceDate", ignore = true)
     ParkingLot toDomain(ParkingEntranceRequestDto parkingEntranceRequestDto);
 
     @Mapping(target = "id", source = "parkingLotId")
     @Mapping(target = "vehicle", ignore = true)
     @Mapping(target = "entranceDate", ignore = true)
+    @Mapping(target = "parking", ignore = true)
     ParkingLot toDomain(Long parkingLotId);
 
+    @Mapping(target = "parking.name", source = "parking.parkingName")
     ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
 
     default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {

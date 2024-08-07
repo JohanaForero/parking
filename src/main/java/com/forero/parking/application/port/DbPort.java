@@ -3,14 +3,13 @@ package com.forero.parking.application.port;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
-import com.forero.parking.domain.model.Vehicle;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DbPort {
-    ParkingLot registerVehicleEntry(ParkingLot parkingLot, Vehicle vehicle);
+    ParkingLot registerVehicleEntry(ParkingLot parkingLot);
 
     History registerHistoryEntry(ParkingLot parkingLot);
 

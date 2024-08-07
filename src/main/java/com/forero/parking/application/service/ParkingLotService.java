@@ -1,6 +1,5 @@
 package com.forero.parking.application.service;
 
-import com.forero.parking.application.configuration.GlobalConfiguration;
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
@@ -16,18 +15,18 @@ import java.util.List;
 
 @Service
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
-                                GlobalConfiguration globalConfiguration, TimeConfiguration timeConfiguration) {
+                                TimeConfiguration timeConfiguration) {
 
-    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle, final String partnerId) {
+    public History registerVehicleEntry(ParkingLot parkingLot, final String partnerId) {
         final int parkingId = parkingLot.getParking().getId().intValue();
         final int parkingLotId = parkingLot.getId().intValue();
         final int numberOfParkingLots = this.dbPort.getNumberOfParkingLots(parkingId);
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         this.validationService.validateParkingLotExists(parkingLotId, numberOfParkingLots);
-        this.validationService.validateParkingLotFree(parkingLot.getId());
-        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate(), parkingLot.getParking().getId());
-
-        parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
+        this.validationService.validateParkingLotFree(parkingLotId);
+        final String licensePlate = parkingLot.getVehicle().getLicensePlate();
+        this.validationService.validateVehicleNotInside(licensePlate, parkingLot.getParking().getId());
+        parkingLot = this.dbPort.registerVehicleEntry(parkingLot);
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
 

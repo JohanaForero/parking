@@ -26,15 +26,14 @@ public record ValidationService(DbPort dbPort) {
     }
 
     public void validateVehicleNotInside(final String licensePlate, final Long parkingId) {
-        final boolean existePlacaEnParking = this.ThereIsAPlaqueInTheParking(licensePlate, parkingId);
-        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
-        if (parkingLot != null) {
+        final boolean existePlacaEnParking = this.thereIsAPlaqueInTheParking(licensePlate, parkingId);
+        if (existePlacaEnParking) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
-                    "already inside in parking lot %s", licensePlate, parkingLot.getId()));
+                    "already inside in parking lot %s", licensePlate, parkingId));
         }
     }
 
-    private boolean ThereIsAPlaqueInTheParking(final String licensePlate, final Long parkingId) {
+    private boolean thereIsAPlaqueInTheParking(final String licensePlate, final Long parkingId) {
         final boolean result = this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
         return !result;
     }

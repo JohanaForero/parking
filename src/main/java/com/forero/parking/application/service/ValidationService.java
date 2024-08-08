@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public record ValidationService(DbPort dbPort) {
     public void validateParkingLotFree(final long parkingId, final int code) {
-        final boolean isOcupado = this.dbPort.existsCodeInParking(parkingId, code);
-        if (isOcupado) {
+        final boolean isCodeInUse = this.dbPort.existsCodeInParking(parkingId, code);
+        if (isCodeInUse) {
             throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free", code));
         }
     }

@@ -1,9 +1,9 @@
 package com.forero.parking.application.service;
 
-import com.forero.parking.application.configuration.GlobalConfiguration;
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
+import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.domain.model.Vehicle;
 import org.springframework.stereotype.Service;
@@ -15,14 +15,17 @@ import java.util.List;
 
 @Service
 public record ParkingLotService(DbPort dbPort, ValidationService validationService,
-                                GlobalConfiguration globalConfiguration, TimeConfiguration timeConfiguration) {
+                                TimeConfiguration timeConfiguration) {
 
-    public History registerVehicleEntry(ParkingLot parkingLot, final Vehicle vehicle) {
-        this.validationService.validateParkingLotExists(parkingLot.getId());
-        this.validationService.validateParkingLotFree(parkingLot.getId());
-        this.validationService.validateVehicleNotInside(vehicle.getLicensePlate());
-
-        parkingLot = this.dbPort.registerVehicleEntry(parkingLot, vehicle);
+    public History registerVehicleEntry(ParkingLot parkingLot, final String partnerId) {
+        final int parkingId = parkingLot.getParkingId().intValue();
+        final int numberOfParkingLots = this.dbPort.getNumberOfParkingLots(parkingId);
+        this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
+        this.validationService.validateParkingLotExists(parkingLot.getCode(), numberOfParkingLots);
+        this.validationService.validateParkingLotFree(parkingId, parkingLot.getCode());
+        final String licensePlate = parkingLot.getVehicle().getLicensePlate();
+        this.validationService.validateVehicleNotInside(licensePlate, parkingId);
+        parkingLot = this.dbPort.registerVehicleEntry(parkingLot);
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
 
@@ -33,7 +36,9 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
 
         final LocalDateTime departureDate = this.timeConfiguration.now();
 
-        final BigDecimal totalPaid = this.calculateTotalPaid(entranceDate, departureDate);
+        final Parking parking = parkingLot.getParking();
+
+        final BigDecimal totalPaid = this.calculateTotalPaid(entranceDate, departureDate, parking);
 
         return this.dbPort.registerHistoryExit(vehicle.getLicensePlate(), parkingLot.getId(), entranceDate,
                 departureDate, totalPaid);
@@ -43,10 +48,16 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         return this.dbPort.getVehiclesInParking();
     }
 
-    private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate) {
+    private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate,
+                                          final Parking parking) {
         final Duration duration = Duration.between(entranceDate, departureDate);
         final long minutes = duration.toSeconds();
         final double hoursRounded = Math.ceil(minutes / 3600.0);
-        return this.globalConfiguration.getCostPerHour().multiply(BigDecimal.valueOf(hoursRounded));
+        return this.getCostPerHour(parking).multiply(BigDecimal.valueOf(hoursRounded));
+    }
+
+    private BigDecimal getCostPerHour(final Parking parking) {
+        final int costPerHour = parking.getCostPerHour();
+        return BigDecimal.valueOf(costPerHour);
     }
 }

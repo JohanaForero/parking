@@ -23,6 +23,8 @@ public class EntranceControllerAdvice {
     private static final Map<Class<? extends RuntimeException>, HttpStatus> HTTP_STATUS_BY_RUNTIME_EXCEPTION_CLASS = Map.ofEntries(
             new SimpleEntry<>(EntranceException.NotFoundParkingLotException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.VehicleInsideException.class, HttpStatus.BAD_REQUEST),
+            new SimpleEntry<>(EntranceException.NotFoundParkingLotInParkingException.class, HttpStatus.BAD_REQUEST),
+            new SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.OccupiedException.class, HttpStatus.BAD_REQUEST));
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

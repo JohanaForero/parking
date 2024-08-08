@@ -13,4 +13,12 @@ public class ParkingLot {
     private Vehicle vehicle;
 
     private LocalDateTime entranceDate;
+
+    private Parking parking;
+
+    private int code;
+
+    public Long getParkingId() {
+        return this.parking.getId();
+    }
 }

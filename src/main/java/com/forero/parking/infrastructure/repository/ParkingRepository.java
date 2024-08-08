@@ -9,4 +9,6 @@ public interface ParkingRepository extends JpaRepository<ParkingEntity, Long> {
     boolean existsByParkingName(String parkingName);
 
     List<ParkingEntity> findByPartnerId(String partnerId);
+
+    boolean existsByIdAndPartnerId(int parkingId, String partnerName);
 }

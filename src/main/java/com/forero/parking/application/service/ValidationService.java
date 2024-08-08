@@ -1,6 +1,5 @@
 package com.forero.parking.application.service;
 
-import com.forero.parking.application.configuration.GlobalConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EmailException;
@@ -10,28 +9,24 @@ import com.forero.parking.domain.model.ParkingLot;
 import org.springframework.stereotype.Service;
 
 @Service
-public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfiguration) {
-    public void validateParkingLotExists(final long parkingLotId) {
-        if (parkingLotId == 0 || parkingLotId > this.globalConfiguration.getNumberOfParkingLots()) {
-            throw new EntranceException.NotFoundParkingLotException(String.format("Parking lot %s not found",
-                    parkingLotId));
+public record ValidationService(DbPort dbPort) {
+    public void validateParkingLotFree(final long parkingId, final int code) {
+        final boolean isCodeInUse = this.dbPort.existsCodeInParking(parkingId, code);
+        if (isCodeInUse) {
+            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free", code));
         }
     }
 
-    public void validateParkingLotFree(final long parkingLotId) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotById(parkingLotId);
-        if (parkingLot != null && parkingLot.getVehicle() != null) {
-            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free",
-                    parkingLot.getId()));
-        }
-    }
-
-    public void validateVehicleNotInside(final String licensePlate) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
-        if (parkingLot != null) {
+    public void validateVehicleNotInside(final String licensePlate, final int parkingId) {
+        final boolean existsPlateInParking = this.doesLicensePlateExistInParking(licensePlate, parkingId);
+        if (existsPlateInParking) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
-                    "already inside in parking lot %s", licensePlate, parkingLot.getId()));
+                    "already inside in parking %s", licensePlate, parkingId));
         }
+    }
+
+    private boolean doesLicensePlateExistInParking(final String licensePlate, final int parkingId) {
+        return this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
     }
 
     public void validateVehicleInside(final String licensePlate) {
@@ -54,6 +49,19 @@ public record ValidationService(DbPort dbPort, GlobalConfiguration globalConfigu
         if (!this.dbPort.existsParkingName(parkingName)) {
             throw new ParkingException.ParkingNameAlreadyExistsException((String.format("Parking with name %s it " +
                     "already exists", parkingName)));
+        }
+    }
+
+    public void validateParkingBelongsToPartner(final int parkingId, final String partnerId) {
+        if (this.dbPort.existsParkingByPartnerId(parkingId, partnerId)) {
+            throw new EntranceException.NotFoundParkingException("This member is not authorized to access this parking lot.");
+        }
+    }
+
+    public void validateParkingLotExists(final int code, final int numberOfParkingLots) {
+        if (code == 0 || code > numberOfParkingLots) {
+            throw new EntranceException.NotFoundParkingLotException(String.format("Parking lot %s not found",
+                    code));
         }
     }
 }

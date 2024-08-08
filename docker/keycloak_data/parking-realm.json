@@ -519,7 +519,7 @@
         {
           "id": "genesis-1",
           "type": "password",
-          "userLabel": "Genesis password",
+          "userLabel": "My password",
           "createdDate": 1721425996622,
           "secretData": "{\"value\":\"gXCA61zZkr2BPt9escZyUifjVljt23GgyuggtY1AuPnaEmNaQDQZExycBu2YwCDv7tnfD1/r1M32WvtX1bPHZA==\",\"salt\":\"b+Ebtndb+KO2K0NV8gD1KQ==\",\"additionalParameters\":{}}",
           "credentialData": "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"

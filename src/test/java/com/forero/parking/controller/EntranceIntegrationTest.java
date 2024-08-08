@@ -59,17 +59,17 @@ class EntranceIntegrationTest extends BaseIT {
     @MethodSource("provideParkingLotNotExists")
     @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withParkingLotNotExists_shouldThrowBadRequest(final String testName,
-                                                                                 final long parkingLotId) throws Exception {
+                                                                                 final long code) throws Exception {
         //Give
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test12", 1200, 80);
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate("ABc123");
-        parkingEntranceRequestDto.setParkingLotId(parkingLotId);
+        parkingEntranceRequestDto.setCode(code);
         parkingEntranceRequestDto.setParkingId(this.parkingId("test12"));
 
         final ErrorObjectDto expected = new ErrorObjectDto();
-        expected.message(String.format("Parking lot %d not found", parkingEntranceRequestDto.getParkingLotId()));
+        expected.message(String.format("Parking lot %d not found", parkingEntranceRequestDto.getCode()));
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
@@ -88,23 +88,20 @@ class EntranceIntegrationTest extends BaseIT {
     @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
         //Given
-        final long occupiedParkingLotId = 14;
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test7", 1200, 80);
-        final long parkingId = this.parkingId("test7");
+        final int parkingId = this.parkingId("test7");
         this.jdbcTemplate.update("INSERT INTO vehicle (id, license_plate) VALUES (?, ?)", 1, "ABc123");
-        this.jdbcTemplate.update("INSERT INTO parking_lot (id, vehicle_id, entrance_date, parking_id) VALUES (?, ?, " +
-                "?, ?)", occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046", parkingId);
-        this.jdbcTemplate.update("INSERT INTO history (id, parking_lot_id, vehicle_id, entrance_date) VALUES (?, ?, " +
-                "?, ?)", 1, occupiedParkingLotId, 1, "2024-07-20 15:31:11.141046");
+        this.jdbcTemplate.update("INSERT INTO parking_lot (vehicle_id, entrance_date, parking_id, code) VALUES (?, ?," +
+                " ?, ?)", 1, "2024-07-20 15:31:11.141046", parkingId, 12);
 
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate("ABC341");
-        parkingEntranceRequestDto.setParkingLotId(occupiedParkingLotId);
+        parkingEntranceRequestDto.setCode(12L);
         parkingEntranceRequestDto.setParkingId(this.parkingId("test7"));
 
         final ErrorObjectDto expected = new ErrorObjectDto();
-        expected.message(String.format("Parking lot %d is not free", occupiedParkingLotId));
+        expected.message(String.format("Parking lot %d is not free", parkingEntranceRequestDto.getCode()));
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
@@ -136,7 +133,7 @@ class EntranceIntegrationTest extends BaseIT {
 
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate(licensePlate);
-        parkingEntranceRequestDto.setParkingLotId(2L);
+        parkingEntranceRequestDto.setCode(2L);
         parkingEntranceRequestDto.setParkingId(this.parkingId("test6"));
 
         final ErrorObjectDto expected = new ErrorObjectDto();
@@ -166,7 +163,7 @@ class EntranceIntegrationTest extends BaseIT {
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes3", 1200, 80);
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate(licensePlate);
-        parkingEntranceRequestDto.setParkingLotId(32L);
+        parkingEntranceRequestDto.setCode(32L);
         parkingEntranceRequestDto.setParkingId(this.parkingId("tes3"));
         final ErrorObjectDto expected = new ErrorObjectDto();
         expected.message("Invalid licensePlate parameters");
@@ -198,7 +195,7 @@ class EntranceIntegrationTest extends BaseIT {
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes2", 1200, 80);
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate("ABC123");
-        parkingEntranceRequestDto.setParkingLotId(54L);
+        parkingEntranceRequestDto.setCode(54L);
         parkingEntranceRequestDto.setParkingId(this.parkingId("tes2"));
 
         final long idOfLastHistory = this.getIdOfLastHistory();
@@ -223,5 +220,4 @@ class EntranceIntegrationTest extends BaseIT {
         final Long id = this.jdbcTemplate.queryForObject("SELECT max(id) FROM history", Long.class);
         return id != null ? id : 0;
     }
-
 }

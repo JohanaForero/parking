@@ -25,7 +25,6 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -55,14 +54,10 @@ public class PostGreSqlAdapter implements DbPort {
                     newParkingLotEntity.setId(parkingLot.getId());
                     return newParkingLotEntity;
                 });
-        final Optional<ParkingEntity> optionalParkingEntity = this.parkingRepository.findById(parkingLot.getParking().getId());
+        final ParkingEntity optionalParkingEntity =
+                this.parkingRepository.findById(parkingLot.getParking().getId()).orElse(null);
         final LocalDateTime entranceDate = this.timeConfiguration.now();
-        if (optionalParkingEntity.isPresent()) {
-            final ParkingEntity parkingEntity1 = optionalParkingEntity.get();
-            parkingLotEntity.setParking(parkingEntity1);
-        } else {
-            throw new RuntimeException("ParkingEntity no encontrada para el ID proporcionado");
-        }
+        parkingLotEntity.setParking(optionalParkingEntity);
         parkingLotEntity.setVehicle(vehicleEntity);
         parkingLotEntity.setEntranceDate(entranceDate);
         parkingLotEntity = this.parkingLotRepository.save(parkingLotEntity);

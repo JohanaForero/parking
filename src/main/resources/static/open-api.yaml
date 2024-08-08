@@ -186,7 +186,7 @@ components:
     ParkingEntranceRequest:
       required:
         - licensePlate
-        - parkingLotId
+        - code
         - parkingId
       type: object
       description: Data required to enter a vehicle into the parking lot
@@ -194,8 +194,11 @@ components:
       properties:
         licensePlate:
           $ref: '#/components/schemas/licensePlate'
-        parkingLotId:
-          $ref: '#/components/schemas/parkingLotId'
+        code:
+          type: integer
+          format: int64
+          description: code of parking lot
+          example: 123
         parkingId:
           $ref: '#/components/schemas/parkingId'
     ParkingEntranceResponse:

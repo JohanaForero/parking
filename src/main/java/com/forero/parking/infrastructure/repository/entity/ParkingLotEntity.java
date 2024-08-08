@@ -37,4 +37,7 @@ public class ParkingLotEntity {
     @ManyToOne
     @JoinColumn(name = "parking_id")
     private ParkingEntity parking;
+
+    @Column(name = "code")
+    private int code;
 }

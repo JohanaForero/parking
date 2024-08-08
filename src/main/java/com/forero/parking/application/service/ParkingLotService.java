@@ -19,11 +19,10 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
 
     public History registerVehicleEntry(ParkingLot parkingLot, final String partnerId) {
         final int parkingId = parkingLot.getParkingId().intValue();
-        final int parkingLotId = parkingLot.getId().intValue();
         final int numberOfParkingLots = this.dbPort.getNumberOfParkingLots(parkingId);
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
-        this.validationService.validateParkingLotExists(parkingLotId, numberOfParkingLots);
-        this.validationService.validateParkingLotFree(parkingLotId);
+        this.validationService.validateParkingLotExists(parkingLot.getCode(), numberOfParkingLots);
+        this.validationService.validateParkingLotFree(parkingId, parkingLot.getCode());
         final String licensePlate = parkingLot.getVehicle().getLicensePlate();
         this.validationService.validateVehicleNotInside(licensePlate, parkingLot.getParkingId());
         parkingLot = this.dbPort.registerVehicleEntry(parkingLot);

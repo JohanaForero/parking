@@ -16,6 +16,8 @@ public class ParkingLot {
 
     private Parking parking;
 
+    private int code;
+
     public Long getParkingId() {
         return this.parking.getId();
     }

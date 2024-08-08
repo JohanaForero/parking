@@ -15,8 +15,6 @@ public interface DbPort {
 
     ParkingLot getParkingLotByLicensePlate(String licensePlate);
 
-    ParkingLot getParkingLotById(long parkingLotId);
-
     LocalDateTime registerVehicleExit(ParkingLot parkingLot);
 
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
@@ -35,4 +33,6 @@ public interface DbPort {
     boolean existsParkingByPartnerId(int parkingId, String partnerId);
 
     boolean thereIsAPlaqueInTheParking(String licensePlate, Long parkingId);
+
+    boolean existsCodeInParking(long parkingId, int code);
 }

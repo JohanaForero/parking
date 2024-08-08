@@ -48,18 +48,15 @@ public class PostGreSqlAdapter implements DbPort {
                     newVehicleEntity.setLicensePlate(parkingLot.getVehicle().getLicensePlate());
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
-        ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
-                .orElseGet(() -> {
-                    final ParkingLotEntity newParkingLotEntity = new ParkingLotEntity();
-                    newParkingLotEntity.setId(parkingLot.getId());
-                    return newParkingLotEntity;
-                });
-        final ParkingEntity optionalParkingEntity =
-                this.parkingRepository.findById(parkingLot.getParking().getId()).orElse(null);
+        final ParkingEntity parking = this.parkingRepository.findById(parkingLot.getParkingId())
+                .orElse(null);
+
+        ParkingLotEntity parkingLotEntity = new ParkingLotEntity();
         final LocalDateTime entranceDate = this.timeConfiguration.now();
-        parkingLotEntity.setParking(optionalParkingEntity);
+        parkingLotEntity.setParking(parking);
         parkingLotEntity.setVehicle(vehicleEntity);
         parkingLotEntity.setEntranceDate(entranceDate);
+        parkingLotEntity.setCode(parkingLot.getCode());
         parkingLotEntity = this.parkingLotRepository.save(parkingLotEntity);
 
         return this.parkingLotMapper.toDomain(parkingLotEntity);
@@ -84,13 +81,6 @@ public class PostGreSqlAdapter implements DbPort {
     @Override
     public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
         final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findByVehicleLicensePlate(licensePlate)
-                .orElse(null);
-        return this.parkingLotMapper.toDomain(parkingLotEntity);
-    }
-
-    @Override
-    public ParkingLot getParkingLotById(final long parkingLotId) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLotId)
                 .orElse(null);
         return this.parkingLotMapper.toDomain(parkingLotEntity);
     }
@@ -170,10 +160,18 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final Long parkingId) {
+    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, @NonNull final Long parkingId) {
         log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
         final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
         log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", result);
-        return !result;
+        return result;
+    }
+
+    @Override
+    public boolean existsCodeInParking(final long parkingId, final int code) {
+        log.info(LOGGER_PREFIX, "[existsCodeInParking] Request {} {}", parkingId, code);
+        final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
+        log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
+        return result;
     }
 }

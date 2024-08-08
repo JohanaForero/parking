@@ -10,15 +10,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public record ValidationService(DbPort dbPort) {
-    public void validateParkingLotFree(final long parkingLotId) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotById(parkingLotId);
-        if (parkingLot != null && parkingLot.getVehicle() != null) {
-            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free",
-                    parkingLot.getId()));
+    public void validateParkingLotFree(final long parkingId, final int code) {
+        final boolean isOcupado = this.dbPort.existsCodeInParking(parkingId, code);
+        if (isOcupado) {
+            throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free", code));
         }
     }
 
     public void validateVehicleNotInside(final String licensePlate, final Long parkingId) {
+        if (parkingId == null) {
+            throw new RuntimeException("no puede ir sin id");
+        }
         final boolean existsPlateInParking = this.doesLicensePlateExistInParking(licensePlate, parkingId);
         if (existsPlateInParking) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
@@ -27,8 +29,10 @@ public record ValidationService(DbPort dbPort) {
     }
 
     private boolean doesLicensePlateExistInParking(final String licensePlate, final Long parkingId) {
-        final boolean result = this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
-        return !result;
+        if (parkingId == null) {
+            throw new RuntimeException("no puede ir sin id");
+        }
+        return this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
     }
 
     public void validateVehicleInside(final String licensePlate) {
@@ -60,10 +64,10 @@ public record ValidationService(DbPort dbPort) {
         }
     }
 
-    public void validateParkingLotExists(final int parkingLotId, final int numberOfParkingLots) {
-        if (parkingLotId == 0 || parkingLotId > numberOfParkingLots) {
+    public void validateParkingLotExists(final int code, final int numberOfParkingLots) {
+        if (code == 0 || code > numberOfParkingLots) {
             throw new EntranceException.NotFoundParkingLotException(String.format("Parking lot %s not found",
-                    parkingLotId));
+                    code));
         }
     }
 }

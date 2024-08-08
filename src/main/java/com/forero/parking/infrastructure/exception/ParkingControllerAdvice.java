@@ -6,6 +6,9 @@ import com.forero.parking.openapi.model.ErrorObjectDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -30,6 +33,32 @@ public class ParkingControllerAdvice {
                 HttpStatus.NOT_EXTENDED);
 
         return new ResponseEntity<>(errorObjectDto, httpStatus);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorObjectDto> handlerHttpMessageNotReadableException(
+            final MethodArgumentNotValidException methodArgumentNotValidException) {
+        log.error("{} [handlerHttpMessageNotReadableException] Caught exception", LOGGER_PREFIX,
+                methodArgumentNotValidException);
+
+        final FieldError fieldError = methodArgumentNotValidException.getFieldErrors().getFirst();
+
+        final ErrorObjectDto errorObjectDto = new ErrorObjectDto();
+        errorObjectDto.message(String.format("Invalid %s parameters", fieldError.getField()));
+
+        return new ResponseEntity<>(errorObjectDto, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorObjectDto> handleHttpMessageNotReadableException(
+            final HttpMessageNotReadableException httpMessageNotReadableException) {
+        log.error("{} [handleHttpMessageNotReadableException] Caught exception", LOGGER_PREFIX,
+                httpMessageNotReadableException);
+
+        final ErrorObjectDto errorObjectDto = new ErrorObjectDto();
+        errorObjectDto.setMessage("Required request body");
+
+        return new ResponseEntity<>(errorObjectDto, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

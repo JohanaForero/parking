@@ -24,6 +24,7 @@ public class EntranceControllerAdvice {
             new SimpleEntry<>(EntranceException.NotFoundParkingLotException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.VehicleInsideException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.NotFoundParkingLotInParkingException.class, HttpStatus.BAD_REQUEST),
+            new SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.OccupiedException.class, HttpStatus.BAD_REQUEST));
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

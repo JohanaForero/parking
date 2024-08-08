@@ -162,7 +162,7 @@ public class PostGreSqlAdapter implements DbPort {
     public int getNumberOfParkingLots(final int parkingId) {
         log.info(LOGGER_PREFIX, "[getNumberOfParkingLots] Request {}", parkingId);
         final ParkingEntity parkingEntity = this.parkingRepository.findById((long) parkingId)
-                .orElseThrow(() -> new EntranceException.NotFoundParkingException("Parking lot not found with id: " + parkingId));
+                .orElseThrow(() -> new EntranceException.NotFoundParkingException("Parking not found with id: " + parkingId));
         return parkingEntity.getNumberOfParkingLots();
     }
 

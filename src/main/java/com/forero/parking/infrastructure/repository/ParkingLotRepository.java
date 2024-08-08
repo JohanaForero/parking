@@ -11,7 +11,7 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
 
     List<ParkingLotEntity> findByVehicleIsNotNull();
 
-    boolean existsByParking_IdAndVehicle_LicensePlate(Long parkingId, String licensePlate);
+    boolean existsByParking_IdAndVehicle_LicensePlate(int parkingId, String licensePlate);
 
     boolean existsByParkingIdAndCode(long parkingId, int code);
 }

@@ -160,7 +160,7 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, @NonNull final Long parkingId) {
+    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final int parkingId) {
         log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
         final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
         log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", result);

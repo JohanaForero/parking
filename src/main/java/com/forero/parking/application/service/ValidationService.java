@@ -17,10 +17,7 @@ public record ValidationService(DbPort dbPort) {
         }
     }
 
-    public void validateVehicleNotInside(final String licensePlate, final Long parkingId) {
-        if (parkingId == null) {
-            throw new RuntimeException("no puede ir sin id");
-        }
+    public void validateVehicleNotInside(final String licensePlate, final int parkingId) {
         final boolean existsPlateInParking = this.doesLicensePlateExistInParking(licensePlate, parkingId);
         if (existsPlateInParking) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
@@ -28,10 +25,7 @@ public record ValidationService(DbPort dbPort) {
         }
     }
 
-    private boolean doesLicensePlateExistInParking(final String licensePlate, final Long parkingId) {
-        if (parkingId == null) {
-            throw new RuntimeException("no puede ir sin id");
-        }
+    private boolean doesLicensePlateExistInParking(final String licensePlate, final int parkingId) {
         return this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
     }
 

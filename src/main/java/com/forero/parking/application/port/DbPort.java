@@ -32,7 +32,7 @@ public interface DbPort {
 
     boolean existsParkingByPartnerId(int parkingId, String partnerId);
 
-    boolean thereIsAPlaqueInTheParking(String licensePlate, Long parkingId);
+    boolean thereIsAPlaqueInTheParking(String licensePlate, int parkingId);
 
     boolean existsCodeInParking(long parkingId, int code);
 }

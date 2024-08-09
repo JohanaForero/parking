@@ -11,21 +11,21 @@ public class DepartureException extends RuntimeException {
         super(message);
     }
 
-    public static class VehicleNotInParkingLotException extends DepartureException {
+    public static class VehicleNotInParkingException extends DepartureException {
 
         @Serial
         private static final long serialVersionUID = 8181393423130231881L;
 
-        public VehicleNotInParkingLotException(final String message) {
+        public VehicleNotInParkingException(final String message) {
             super(message);
         }
     }
 
-    public static class ParkingLotNoFound extends DepartureException {
+    public static class VehicleNoFound extends DepartureException {
         @Serial
-        private static final long serialVersionUID = 2415079451977975082L;
+        private static final long serialVersionUID = 1871647130130458581L;
 
-        public ParkingLotNoFound(final String message) {
+        public VehicleNoFound(final String message) {
             super(message);
         }
     }

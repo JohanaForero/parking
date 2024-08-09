@@ -21,34 +21,31 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         final int numberOfParkingLots = this.dbPort.getNumberOfParkingLots(parkingId);
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         this.validationService.validateParkingLotExists(parkingLot.getCode(), numberOfParkingLots);
-        this.validationService.validateParkingLotFree(parkingLot, licensePlate);
-//        this.validationService.validateVehicleNotInside(licensePlate, parkingId);
+        this.validationService.validateVehicleInParkingAndCodeActual(parkingId, licensePlate);
+        this.validationService.validateQueElCodeNoEsteOcupado(parkingId, parkingLot.getCode());
 
+        this.validationService.validateParkingLotFree(parkingLot, licensePlate);
         parkingLot = this.dbPort.registerVehicleEntry(parkingLot, licensePlate);
         return this.dbPort.registerHistoryEntry(parkingLot, licensePlate);
     }
 
-    public History registerVehicleExit(final ParkingLot parkingLot) {
-        final Vehicle vehicle = new Vehicle();
+    public History registerVehicleExit(final ParkingLot parkingLot, final String partnerId, final String licensePlate) {
+        final int parkingId = parkingLot.getParkingId().intValue();
+        this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
+        final Vehicle vehicle = this.dbPort.getVehicle(licensePlate);
         final ParkingLot parkingLotResult =
-                this.dbPort.getParkingLotByLicensePlateAndCodeAndParking(parkingLot.getParkingId().intValue(),
-                        parkingLot.getCode(), vehicle.getLicensePlate());
-        this.validationService.validateVehicleInParkingAndCode(parkingLot.getParkingId().intValue(),
-                parkingLot.getCode(), vehicle.getLicensePlate());
+                this.dbPort.getParkingLotByCodeAndParkingeEntry(parkingLot.getCode(),
+                        parkingLot.getParkingId().intValue(), licensePlate);
 
-        final Parking parking = this.dbPort.findById(parkingLot.getParkingId());
+        final Parking parking = this.dbPort.findById(parkingLotResult.getParkingId());
         final LocalDateTime departureDate = this.timeConfiguration.now();
-        final LocalDateTime entranceDate = this.dbPort.registerVehicleExit(parkingLotResult);
+        final LocalDateTime entranceDate = parkingLotResult.getEntranceDate();
 
         final BigDecimal totalPaid = this.calculateTotalPaid(entranceDate, departureDate, parking);
 
         return this.dbPort.registerHistoryExit(vehicle.getLicensePlate(), parkingLotResult.getId(), entranceDate,
                 departureDate, totalPaid);
     }
-
-//    public List<ParkingLot> getVehiclesInParking() {
-//        return this.dbPort.getVehiclesInParking();
-//    }
 
     private BigDecimal calculateTotalPaid(final LocalDateTime entranceDate, final LocalDateTime departureDate,
                                           final Parking parking) {

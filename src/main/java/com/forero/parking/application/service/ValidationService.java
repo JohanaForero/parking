@@ -10,38 +10,26 @@ import org.springframework.stereotype.Service;
 @Service
 public record ValidationService(DbPort dbPort) {
     public void validateParkingLotFree(final ParkingLot parkingLot, final String licensePlate) {
-        final boolean isCodeInUse = this.dbPort.ThereIsAVehicleInTheParkingLot(parkingLot, licensePlate);
+        final boolean isCodeInUse = this.dbPort.thereIsAVehicleInTheParkingLot(parkingLot, licensePlate);
         if (isCodeInUse) {
             throw new EntranceException.OccupiedException(String.format("Parking lot %s is not free", parkingLot.getCode()));
         }
     }
 
-//    public void validateVehicleNotInside(final String licensePlate, final int parkingId) {
-//        final boolean existsPlateInParking = this.doesLicensePlateExistInParking(licensePlate, parkingId);
-//        if (existsPlateInParking) {
-//            throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate %s is " +
-//                    "already inside in parking %s", licensePlate, parkingId));
-//        }
-//    }
+    public void validateQueElCodeNoEsteOcupado(final int parkingId, final int code) {
+        final boolean isCodeInUse = this.dbPort.codeIsLibre(parkingId, code);
+        if (isCodeInUse) {
+            throw new EntranceException.OccupiedException(String.format("Parking code %s is not free", code));
+        }
 
-    private boolean doesLicensePlateExistInParking(final String licensePlate, final int parkingId) {
-        return this.dbPort.thereIsAPlaqueInTheParking(licensePlate, parkingId);
     }
 
-//    public void validateVehicleInside(final String licensePlate) {
-//        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
-//        if (parkingLot == null) {
-//            throw new EmailException.VehicleNotInsideException(String.format("Vehicle with license plate %s is " +
-//                    "not inside in parking", licensePlate));
-//        }
-//    }
-
-    public void validateVehicleInParkingAndCode(final int parkingLotId, final int code, final String licensePlate) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlateAndCodeAndParking(parkingLotId, code,
-                licensePlate);
-        if (parkingLot == null) {
-            throw new DepartureException.VehicleNotInParkingLotException(String.format("Vehicle with license plate " +
-                    "%s is not in parking lot %s", licensePlate, parkingLotId));
+    public void validateVehicleInParkingAndCodeActual(final int parkingId,
+                                                      final String licensePlate) {
+        final boolean existVehicleInParking = this.dbPort.existsVehicleInParking(parkingId, licensePlate);
+        if (existVehicleInParking) {
+            throw new DepartureException.VehicleNotInParkingException(String.format("Vehicle with license plate " +
+                    "%s is in parking lot %s", licensePlate, parkingId));
         }
     }
 

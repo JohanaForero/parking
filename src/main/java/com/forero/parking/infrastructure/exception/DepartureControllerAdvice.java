@@ -21,7 +21,9 @@ public class DepartureControllerAdvice {
     private static final String LOGGER_PREFIX = String.format("[%s]", DepartureControllerAdvice.class.getSimpleName());
 
     private static final Map<Class<? extends RuntimeException>, HttpStatus> HTTP_STATUS_BY_RUNTIME_EXCEPTION_CLASS = Map.ofEntries(
-            new SimpleEntry<>(DepartureException.VehicleNotInParkingLotException.class, HttpStatus.BAD_REQUEST));
+            new SimpleEntry<>(DepartureException.VehicleNotInParkingException.class, HttpStatus.BAD_REQUEST),
+            new SimpleEntry<>(DepartureException.VehicleNoFound.class, HttpStatus.BAD_REQUEST));
+
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorObjectDto> handleHttpMessageNotReadableException(

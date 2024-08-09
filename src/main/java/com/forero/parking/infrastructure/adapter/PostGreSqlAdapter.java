@@ -8,9 +8,11 @@ import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
+import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
 import com.forero.parking.infrastructure.mapper.ParkingMapper;
+import com.forero.parking.infrastructure.mapper.VehicleMapper;
 import com.forero.parking.infrastructure.repository.HistoryRepository;
 import com.forero.parking.infrastructure.repository.ParkingLotRepository;
 import com.forero.parking.infrastructure.repository.ParkingRepository;
@@ -39,6 +41,7 @@ public class PostGreSqlAdapter implements DbPort {
     private final ParkingLotMapper parkingLotMapper;
     private final ParkingMapper parkingMapper;
     private final HistoryMapper historyMapper;
+    private final VehicleMapper vehicleMapper;
     private final VehicleRepository vehicleRepository;
     private final TimeConfiguration timeConfiguration;
 
@@ -79,25 +82,11 @@ public class PostGreSqlAdapter implements DbPort {
         return this.historyMapper.toDomain(historyEntity);
     }
 
-//    @Override
-//    public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
-//        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findParkingLotByParkingIdAndCode(licensePlate)
-//                .orElse(null);
-//        return this.parkingLotMapper.toDomain(parkingLotEntity);
-//    }
-
     @Override
-    public LocalDateTime registerVehicleExit(final ParkingLot parkingLot) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
-                .orElseThrow(() -> new DepartureException.ParkingLotNoFound("No se encontro ese parqueadero"));
-
-        final LocalDateTime entranceDate = parkingLotEntity.getEntranceDate();
-
-        parkingLotEntity.setEntranceDate(null);
-        parkingLotEntity.setCode(0);
-        this.parkingLotRepository.save(parkingLotEntity);
-
-        return entranceDate;
+    public Vehicle getVehicle(final String licensePlate) {
+        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(licensePlate)
+                .orElseThrow(() -> new DepartureException.VehicleNoFound("Vehicle no found: " + licensePlate));
+        return this.vehicleMapper.toDomain(vehicleEntity);
     }
 
     @Override
@@ -161,33 +150,6 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final int parkingId) {
-        log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
-//        final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
-        log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", false);
-        return false;
-    }
-
-//    @Override
-//    public boolean existsCodeInParking(final long parkingId, final int code) {
-//        log.info(LOGGER_PREFIX, "[existsCodeInParking] Request {} {}", parkingId, code);
-//        final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
-//        log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
-//        return result;
-//    }
-
-    @Override
-    public ParkingLot getParkingLotByLicensePlateAndCodeAndParking(final int parkingId, final int code,
-                                                                   @NonNull final String licensePlate) {
-        log.info(LOGGER_PREFIX, "[getParkingLotByLicensePlateAndCodeAndParking] Request {} {} {}", licensePlate, code
-                , parkingId);
-        final ParkingLotEntity parkingLotEntity = new ParkingLotEntity();
-//                this.parkingLotRepository.findParkingLotByParkingIdAndCode((long) parkingId, code)
-//                        .orElseThrow(() -> new EntranceException.NotFoundParkingException("ParkingLot not found with code: " + code));
-        return this.parkingLotMapper.toDomain(parkingLotEntity);
-    }
-
-    @Override
     public Parking findById(final long parkingId) {
         final ParkingEntity parkingEntity =
                 this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException.ParkingNoFoundException("no se encontro el parking: " + parkingId));
@@ -195,13 +157,38 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public boolean ThereIsAVehicleInTheParkingLot(final ParkingLot parkingLot, final String licensePlate) {
+    public boolean existsVehicleInParking(final int parkingId, final String licensePlate) {
+        log.info(LOGGER_PREFIX, "[existsVehicleInParking] Request {} {} {}", parkingId, licensePlate);
+        final boolean result = this.historyRepository.existsByParkingAndVehicleAndNoDepartureOrPayment(parkingId, licensePlate);
+        log.info(LOGGER_PREFIX + "[existsParkingByPartnerId] Response {}", result);
+        return result;
+    }
+
+    @Override
+    public boolean thereIsAVehicleInTheParkingLot(final ParkingLot parkingLot, final String licensePlate) {
         log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Request {} {} {}", parkingLot.getParkingId(),
                 parkingLot.getCode(), licensePlate);
         final boolean result =
-                this.historyRepository.existsByParkingLotAndVehicleAndNoDepartureOrPayment(parkingLot.getParkingId(),
+                this.historyRepository.existsByParkingLotAndVehicleAndNoDepartureOrPayment(parkingLot.getParkingId().intValue(),
                         parkingLot.getCode(), licensePlate);
         log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Response {}", result);
+        return result;
+    }
+
+    @Override
+    public ParkingLot getParkingLotByCodeAndParkingeEntry(final int code, final int parkingId, final String licensePlate) {
+        final HistoryEntity history =
+                this.historyRepository.findByParkingLotIdAndVehicleLicensePlateAndDepartureDateIsNull(
+                        parkingId, code, licensePlate).orElseThrow(() -> new DepartureException.VehicleNoFound("The car is not in that code"));
+        final ParkingLotEntity parkingLotEntity =
+                this.parkingLotRepository.findById(history.getParkingLot().getId()).orElse(null);
+        return this.parkingLotMapper.toDomain(parkingLotEntity);
+    }
+
+    @Override
+    public boolean codeIsLibre(final int parkingId, final int code) {
+        final boolean result = this.historyRepository.isCodeOccupied(parkingId, code);
+        log.info(LOGGER_PREFIX + "[codeIsLibre] Response {}", result);
         return result;
     }
 }

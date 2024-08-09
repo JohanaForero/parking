@@ -3,6 +3,7 @@ package com.forero.parking.application.port;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
+import com.forero.parking.domain.model.Vehicle;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,14 +14,12 @@ public interface DbPort {
 
     History registerHistoryEntry(ParkingLot parkingLot, String licensePlate);
 
-//    ParkingLot getParkingLotByLicensePlate(String licensePlate);
-
-    LocalDateTime registerVehicleExit(ParkingLot parkingLot);
-
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
-//    List<ParkingLot> getVehiclesInParking();
+    boolean thereIsAVehicleInTheParkingLot(ParkingLot parkingLot, String licensePlate);
+
+    boolean codeIsLibre(int parkingId, int code);
 
     int saveParking(Parking parking);
 
@@ -32,13 +31,11 @@ public interface DbPort {
 
     boolean existsParkingByPartnerId(int parkingId, String partnerId);
 
-    boolean thereIsAPlaqueInTheParking(String licensePlate, int parkingId);
-
-//    boolean existsCodeInParking(long parkingId, int code);
-
-    ParkingLot getParkingLotByLicensePlateAndCodeAndParking(int parkingId, int code, String licensePlate);
+    Vehicle getVehicle(String licensePlate);
 
     Parking findById(long parkingId);
 
-    boolean ThereIsAVehicleInTheParkingLot(ParkingLot parkingLot, String licensePlate);
+    boolean existsVehicleInParking(int parkingId, String licensePlate);
+
+    ParkingLot getParkingLotByCodeAndParkingeEntry(int code, int parkingId, String licensePlate);
 }

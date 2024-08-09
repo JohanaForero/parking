@@ -5,6 +5,7 @@ import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
+import com.forero.parking.infrastructure.mapper.VehicleMapper;
 import com.forero.parking.infrastructure.util.JwtTokenExtractor;
 import com.forero.parking.infrastructure.util.JwtUtil;
 import com.forero.parking.openapi.api.EntranceApi;
@@ -24,15 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class EntranceController implements EntranceApi {
     private final ParkingLotService parkingLotService;
     private final ParkingLotMapper parkingLotMapper;
+    private final VehicleMapper vehicleMapper;
     private final HistoryMapper historyMapper;
 
     @Override
     @PreAuthorize("hasAuthority('PARTNER')")
     public ResponseEntity<ParkingEntranceResponseDto> registerVehicleEntry(final ParkingEntranceRequestDto parkingEntranceRequestDto) {
         final ParkingLot parkingLot = this.parkingLotMapper.toDomain(parkingEntranceRequestDto);
+        ;
         final String token = JwtTokenExtractor.extractTokenFromHeader();
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
-        final History history = this.parkingLotService.registerVehicleEntry(parkingLot, partnerId);
+        final History history = this.parkingLotService.registerVehicleEntry(parkingLot, partnerId,
+                parkingEntranceRequestDto.getLicensePlate());
 
         return new ResponseEntity<>(this.historyMapper.toEntranceDto(history), HttpStatus.CREATED);
     }

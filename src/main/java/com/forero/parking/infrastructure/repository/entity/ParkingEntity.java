@@ -24,9 +24,9 @@ public class ParkingEntity {
     @Column(name = "name")
     private String parkingName;
 
-    @Column(name = "Cost_Per_Hour")
+    @Column(name = "cost_per_hour")
     private int costPerHour;
 
-    @Column(name = "Number_Of_Parking_Lots")
+    @Column(name = "number_of_parking_lots")
     private int numberOfParkingLots;
 }

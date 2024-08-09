@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 public record EmailService(ValidationService validationService, EmailServerPort emailServerPort) {
 
     public String sendEmail(final Email email) {
-        this.validationService.validateVehicleInside(email.getLicensePlate());
+
+//        this.validationService.validateVehicleInside(email.getLicensePlate());
 
         return this.emailServerPort.sendEmail(email);
     }

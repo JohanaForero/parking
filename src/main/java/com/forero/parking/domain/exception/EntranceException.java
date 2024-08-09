@@ -31,6 +31,7 @@ public class EntranceException extends RuntimeException {
     }
 
     public static class NotFoundParkingLotInParkingException extends EntranceException {
+        @Serial
         private static final long serialVersionUID = -2951405768748327677L;
 
         public NotFoundParkingLotInParkingException(final String message) {

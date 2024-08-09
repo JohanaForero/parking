@@ -33,30 +33,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostGreSqlAdapter implements DbPort {
     private static final String LOGGER_PREFIX = String.format("[%s] ", PostGreSqlAdapter.class.getSimpleName());
-    private final VehicleRepository vehicleRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingRepository parkingRepository;
     private final HistoryRepository historyRepository;
     private final ParkingLotMapper parkingLotMapper;
     private final ParkingMapper parkingMapper;
     private final HistoryMapper historyMapper;
+    private final VehicleRepository vehicleRepository;
     private final TimeConfiguration timeConfiguration;
 
     @Override
-    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot) {
-        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(parkingLot.getVehicle().getLicensePlate())
+    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot, final String licensePlate) {
+        this.vehicleRepository.findByLicensePlate(licensePlate)
                 .orElseGet(() -> {
                     final VehicleEntity newVehicleEntity = new VehicleEntity();
-                    newVehicleEntity.setLicensePlate(parkingLot.getVehicle().getLicensePlate());
+                    newVehicleEntity.setLicensePlate(licensePlate);
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
+
         final ParkingEntity parking = this.parkingRepository.findById(parkingLot.getParkingId())
                 .orElse(null);
-
         ParkingLotEntity parkingLotEntity = new ParkingLotEntity();
         final LocalDateTime entranceDate = this.timeConfiguration.now();
         parkingLotEntity.setParking(parking);
-        parkingLotEntity.setVehicle(vehicleEntity);
         parkingLotEntity.setEntranceDate(entranceDate);
         parkingLotEntity.setCode(parkingLot.getCode());
         parkingLotEntity = this.parkingLotRepository.save(parkingLotEntity);
@@ -65,8 +64,8 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public History registerHistoryEntry(final ParkingLot parkingLot) {
-        final VehicleEntity vehicleEntity = this.vehicleRepository.findById(parkingLot.getVehicle().getId())
+    public History registerHistoryEntry(final ParkingLot parkingLot, final String licensePlate) {
+        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(licensePlate)
                 .orElse(null);
         final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
                 .orElse(null);
@@ -80,12 +79,12 @@ public class PostGreSqlAdapter implements DbPort {
         return this.historyMapper.toDomain(historyEntity);
     }
 
-    @Override
-    public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findByVehicleLicensePlate(licensePlate)
-                .orElse(null);
-        return this.parkingLotMapper.toDomain(parkingLotEntity);
-    }
+//    @Override
+//    public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
+//        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findParkingLotByParkingIdAndCode(licensePlate)
+//                .orElse(null);
+//        return this.parkingLotMapper.toDomain(parkingLotEntity);
+//    }
 
     @Override
     public LocalDateTime registerVehicleExit(final ParkingLot parkingLot) {
@@ -94,7 +93,6 @@ public class PostGreSqlAdapter implements DbPort {
 
         final LocalDateTime entranceDate = parkingLotEntity.getEntranceDate();
 
-        parkingLotEntity.setVehicle(null);
         parkingLotEntity.setEntranceDate(null);
         parkingLotEntity.setCode(0);
         this.parkingLotRepository.save(parkingLotEntity);
@@ -116,13 +114,13 @@ public class PostGreSqlAdapter implements DbPort {
                 .orElse(null);
     }
 
-    @Override
-    public List<ParkingLot> getVehiclesInParking() {
-        return this.parkingLotRepository.findByVehicleIsNotNull()
-                .stream()
-                .map(this.parkingLotMapper::toDomain)
-                .toList();
-    }
+//    @Override
+//    public List<ParkingLot> getVehiclesInParking() {
+//        return this.parkingLotRepository.findByVehicleIsNotNull()
+//                .stream()
+//                .map(this.parkingLotMapper::toDomain)
+//                .toList();
+//    }
 
     @Override
     public int saveParking(final Parking parking) {
@@ -165,27 +163,27 @@ public class PostGreSqlAdapter implements DbPort {
     @Override
     public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final int parkingId) {
         log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
-        final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
-        log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", result);
-        return result;
+//        final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
+        log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", false);
+        return false;
     }
 
-    @Override
-    public boolean existsCodeInParking(final long parkingId, final int code) {
-        log.info(LOGGER_PREFIX, "[existsCodeInParking] Request {} {}", parkingId, code);
-        final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
-        log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
-        return result;
-    }
+//    @Override
+//    public boolean existsCodeInParking(final long parkingId, final int code) {
+//        log.info(LOGGER_PREFIX, "[existsCodeInParking] Request {} {}", parkingId, code);
+//        final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
+//        log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
+//        return result;
+//    }
 
     @Override
     public ParkingLot getParkingLotByLicensePlateAndCodeAndParking(final int parkingId, final int code,
                                                                    @NonNull final String licensePlate) {
         log.info(LOGGER_PREFIX, "[getParkingLotByLicensePlateAndCodeAndParking] Request {} {} {}", licensePlate, code
                 , parkingId);
-        final ParkingLotEntity parkingLotEntity =
-                this.parkingLotRepository.findParkingLotByParkingIdAndCodeAndLicensePlate((long) parkingId, code, licensePlate)
-                        .orElseThrow(() -> new EntranceException.NotFoundParkingException("ParkingLot not found with code: " + code));
+        final ParkingLotEntity parkingLotEntity = new ParkingLotEntity();
+//                this.parkingLotRepository.findParkingLotByParkingIdAndCode((long) parkingId, code)
+//                        .orElseThrow(() -> new EntranceException.NotFoundParkingException("ParkingLot not found with code: " + code));
         return this.parkingLotMapper.toDomain(parkingLotEntity);
     }
 
@@ -194,5 +192,16 @@ public class PostGreSqlAdapter implements DbPort {
         final ParkingEntity parkingEntity =
                 this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException.ParkingNoFoundException("no se encontro el parking: " + parkingId));
         return this.parkingMapper.toModel(parkingEntity);
+    }
+
+    @Override
+    public boolean ThereIsAVehicleInTheParkingLot(final ParkingLot parkingLot, final String licensePlate) {
+        log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Request {} {} {}", parkingLot.getParkingId(),
+                parkingLot.getCode(), licensePlate);
+        final boolean result =
+                this.historyRepository.existsByParkingLotAndVehicleAndNoDepartureOrPayment(parkingLot.getParkingId(),
+                        parkingLot.getCode(), licensePlate);
+        log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Response {}", result);
+        return result;
     }
 }

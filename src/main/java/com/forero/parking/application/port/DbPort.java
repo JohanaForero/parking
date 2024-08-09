@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DbPort {
-    ParkingLot registerVehicleEntry(ParkingLot parkingLot);
+    ParkingLot registerVehicleEntry(ParkingLot parkingLot, String licensePlate);
 
-    History registerHistoryEntry(ParkingLot parkingLot);
+    History registerHistoryEntry(ParkingLot parkingLot, String licensePlate);
 
-    ParkingLot getParkingLotByLicensePlate(String licensePlate);
+//    ParkingLot getParkingLotByLicensePlate(String licensePlate);
 
     LocalDateTime registerVehicleExit(ParkingLot parkingLot);
 
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
-    List<ParkingLot> getVehiclesInParking();
+//    List<ParkingLot> getVehiclesInParking();
 
     int saveParking(Parking parking);
 
@@ -34,9 +34,11 @@ public interface DbPort {
 
     boolean thereIsAPlaqueInTheParking(String licensePlate, int parkingId);
 
-    boolean existsCodeInParking(long parkingId, int code);
+//    boolean existsCodeInParking(long parkingId, int code);
 
     ParkingLot getParkingLotByLicensePlateAndCodeAndParking(int parkingId, int code, String licensePlate);
 
     Parking findById(long parkingId);
+
+    boolean ThereIsAVehicleInTheParkingLot(ParkingLot parkingLot, String licensePlate);
 }

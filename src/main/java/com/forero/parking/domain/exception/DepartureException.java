@@ -20,4 +20,13 @@ public class DepartureException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class ParkingLotNoFound extends DepartureException {
+        @Serial
+        private static final long serialVersionUID = 2415079451977975082L;
+
+        public ParkingLotNoFound(final String message) {
+            super(message);
+        }
+    }
 }

@@ -35,4 +35,8 @@ public interface DbPort {
     boolean thereIsAPlaqueInTheParking(String licensePlate, int parkingId);
 
     boolean existsCodeInParking(long parkingId, int code);
+
+    ParkingLot getParkingLotByLicensePlateAndCodeAndParking(int parkingId, int code, String licensePlate);
+
+    Parking findById(long parkingId);
 }

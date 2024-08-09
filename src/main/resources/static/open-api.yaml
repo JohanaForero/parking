@@ -50,7 +50,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParkingDepartureRequest'
+              $ref: '#/components/schemas/ParkingEntranceRequest'
       responses:
         200:
           description: The vehicle has exited successfully
@@ -216,7 +216,8 @@ components:
     ParkingDepartureRequest:
       required:
         - licensePlate
-        - parkingLotId
+        - parkingId
+        - code
       type: object
       description: Data required to exit a vehicle into the parking lot
       additionalProperties: false

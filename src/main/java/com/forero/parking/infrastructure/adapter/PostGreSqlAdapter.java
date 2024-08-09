@@ -2,7 +2,9 @@ package com.forero.parking.infrastructure.adapter;
 
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EntranceException;
+import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
@@ -88,12 +90,13 @@ public class PostGreSqlAdapter implements DbPort {
     @Override
     public LocalDateTime registerVehicleExit(final ParkingLot parkingLot) {
         final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
-                .orElse(new ParkingLotEntity());
+                .orElseThrow(() -> new DepartureException.ParkingLotNoFound("No se encontro ese parqueadero"));
 
         final LocalDateTime entranceDate = parkingLotEntity.getEntranceDate();
 
         parkingLotEntity.setVehicle(null);
         parkingLotEntity.setEntranceDate(null);
+        parkingLotEntity.setCode(0);
         this.parkingLotRepository.save(parkingLotEntity);
 
         return entranceDate;
@@ -173,5 +176,23 @@ public class PostGreSqlAdapter implements DbPort {
         final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
         log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
         return result;
+    }
+
+    @Override
+    public ParkingLot getParkingLotByLicensePlateAndCodeAndParking(final int parkingId, final int code,
+                                                                   @NonNull final String licensePlate) {
+        log.info(LOGGER_PREFIX, "[getParkingLotByLicensePlateAndCodeAndParking] Request {} {} {}", licensePlate, code
+                , parkingId);
+        final ParkingLotEntity parkingLotEntity =
+                this.parkingLotRepository.findParkingLotByParkingIdAndCodeAndLicensePlate((long) parkingId, code, licensePlate)
+                        .orElseThrow(() -> new EntranceException.NotFoundParkingException("ParkingLot not found with code: " + code));
+        return this.parkingLotMapper.toDomain(parkingLotEntity);
+    }
+
+    @Override
+    public Parking findById(final long parkingId) {
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException.ParkingNoFoundException("no se encontro el parking: " + parkingId));
+        return this.parkingMapper.toModel(parkingEntity);
     }
 }

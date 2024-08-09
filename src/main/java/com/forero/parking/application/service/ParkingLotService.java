@@ -5,7 +5,6 @@ import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
-import com.forero.parking.domain.model.Vehicle;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,18 +28,20 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         return this.dbPort.registerHistoryEntry(parkingLot);
     }
 
-    public History registerVehicleExit(final ParkingLot parkingLot, final Vehicle vehicle) {
-        this.validationService.validateVehicleInParkingLot(vehicle.getLicensePlate(), parkingLot.getId());
+    public History registerVehicleExit(final ParkingLot parkingLot) {
+        final ParkingLot parkingLotResult =
+                this.dbPort.getParkingLotByLicensePlateAndCodeAndParking(parkingLot.getParkingId().intValue(),
+                        parkingLot.getCode(), parkingLot.getVehicle().getLicensePlate());
+        this.validationService.validateVehicleInParkingAndCode(parkingLot.getParkingId().intValue(),
+                parkingLot.getCode(), parkingLot.getVehicle().getLicensePlate());
 
-        final LocalDateTime entranceDate = this.dbPort.registerVehicleExit(parkingLot);
-
+        final Parking parking = this.dbPort.findById(parkingLot.getParkingId());
         final LocalDateTime departureDate = this.timeConfiguration.now();
-
-        final Parking parking = parkingLot.getParking();
+        final LocalDateTime entranceDate = this.dbPort.registerVehicleExit(parkingLotResult);
 
         final BigDecimal totalPaid = this.calculateTotalPaid(entranceDate, departureDate, parking);
 
-        return this.dbPort.registerHistoryExit(vehicle.getLicensePlate(), parkingLot.getId(), entranceDate,
+        return this.dbPort.registerHistoryExit(parkingLot.getVehicle().getLicensePlate(), parkingLotResult.getId(), entranceDate,
                 departureDate, totalPaid);
     }
 

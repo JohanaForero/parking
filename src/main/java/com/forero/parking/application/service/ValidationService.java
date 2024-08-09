@@ -37,9 +37,10 @@ public record ValidationService(DbPort dbPort) {
         }
     }
 
-    public void validateVehicleInParkingLot(final String licensePlate, final long parkingLotId) {
-        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlate(licensePlate);
-        if (parkingLot == null || parkingLot.getId() != parkingLotId) {
+    public void validateVehicleInParkingAndCode(final int parkingLotId, final int code, final String licensePlate) {
+        final ParkingLot parkingLot = this.dbPort.getParkingLotByLicensePlateAndCodeAndParking(parkingLotId, code,
+                licensePlate);
+        if (parkingLot == null) {
             throw new DepartureException.VehicleNotInParkingLotException(String.format("Vehicle with license plate " +
                     "%s is not in parking lot %s", licensePlate, parkingLotId));
         }

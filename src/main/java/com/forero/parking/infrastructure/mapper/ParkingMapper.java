@@ -22,9 +22,7 @@ public interface ParkingMapper {
     ParkingEntity toEntity(Parking parking);
 
     @Mapping(target = "name", source = "parkingName")
-    @Mapping(target = "partnerId", ignore = true)
-    @Mapping(target = "costPerHour", ignore = true)
-    @Mapping(target = "numberOfParkingLots", ignore = true)
+    @Mapping(target = "id", source = "id")
     Parking toModel(ParkingEntity parkingEntity);
 
     @Mapping(source = "id", target = "parkingId")

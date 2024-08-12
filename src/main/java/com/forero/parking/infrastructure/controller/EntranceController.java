@@ -32,7 +32,8 @@ public class EntranceController implements EntranceApi {
         final ParkingLot parkingLot = this.parkingLotMapper.toDomain(parkingEntranceRequestDto);
         final String token = JwtTokenExtractor.extractTokenFromHeader();
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
-        final History history = this.parkingLotService.registerVehicleEntry(parkingLot, partnerId);
+        final History history = this.parkingLotService.registerVehicleEntry(parkingLot, partnerId,
+                parkingEntranceRequestDto.getLicensePlate());
 
         return new ResponseEntity<>(this.historyMapper.toEntranceDto(history), HttpStatus.CREATED);
     }

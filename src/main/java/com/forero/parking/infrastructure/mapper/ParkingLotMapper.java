@@ -15,13 +15,10 @@ import java.util.List;
 @Mapper
 public interface ParkingLotMapper {
     @Mapping(target = "parking.id", source = "parkingId")
-    @Mapping(target = "vehicle.licensePlate", source = "licensePlate")
     @Mapping(target = "entranceDate", ignore = true)
-    @Mapping(target = "id", ignore = true)
     ParkingLot toDomain(ParkingEntranceRequestDto parkingEntranceRequestDto);
 
     @Mapping(target = "id", source = "parkingLotId")
-    @Mapping(target = "vehicle", ignore = true)
     @Mapping(target = "entranceDate", ignore = true)
     @Mapping(target = "parking", ignore = true)
     ParkingLot toDomain(Long parkingLotId);
@@ -42,9 +39,7 @@ public interface ParkingLotMapper {
 
     List<VehicleDto> toDtos(List<ParkingLot> parkingLots);
 
-    @Mapping(target = "id", source = "vehicle.id")
-    @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
-    @Mapping(target = "parkingLotId", source = "id")
+
     VehicleDto toDto(ParkingLot parkingLot);
 
     default OffsetDateTime map(final LocalDateTime localDateTime) {

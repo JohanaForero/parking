@@ -50,7 +50,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ParkingDepartureRequest'
+              $ref: '#/components/schemas/ParkingEntranceRequest'
       responses:
         200:
           description: The vehicle has exited successfully
@@ -60,6 +60,12 @@ paths:
                 $ref: '#/components/schemas/ParkingDepartureResponse'
         400:
           description: Bad Request - If the resource is misspelled (badly constructed URI) If the data in the request is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        403:
+          description: Forbidden - If the Token does not have the necessary permissions.
           content:
             application/json:
               schema:
@@ -138,6 +144,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+    patch:
+      tags:
+        - Parking
+      summary: Update Parking Partially
+      description: Update specific fields of an existing parking
+      operationId: updateParkingPartially
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateParkingRequest'
+      responses:
+        204:
+          description: The parking has been updated successfully
+        400:
+          description: Bad Request - If the resource is misspelled (badly constructed URI) or if the data in the request is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Parking not found
+    put:
+      tags:
+        - Parking
+      summary: Update full parking
+      description: Completely upgrade a parking
+      operationId: updateParking
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateParkingCompleteRequest'
+      responses:
+        204:
+          description: The parking has been updated successfully
+        400:
+          description: Bad Request - If the resource is misspelled (badly constructed URI) or if the data in the request is not correct.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Parking not found
   /centralParking/parkings:
     get:
       tags:
@@ -154,6 +210,73 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ParkingsResponse'
+  /centralParking/parking/{idParking}:
+    get:
+      tags:
+        - Parking
+      summary: Get a specific parking
+      description: Get the details of a specific parking space by its ID
+      operationId: getParkingById
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: idParking
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the parking to retrieve
+      responses:
+        200:
+          description: The parking has been retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParkingRequest'
+        403:
+          description: Forbidden - If the Token does not have the necessary permissions, return FORBIDDEN_EXCEPTION.
+            The partner is not associated with the parking and is not allowed to access the resource, return
+            USER_NOT_ALLOWED.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Parking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+    delete:
+      tags:
+        - Parking
+      summary: Delete a specific parking
+      description: Delete a specific parking space by its ID
+      operationId: deleteParkingById
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: idParking
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the parking to delete
+      responses:
+        204:
+          description: The parking has been successfully deleted
+        404:
+          description: Parking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        401:
+          description: Unauthorized to delete parking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
 components:
   securitySchemes:
     bearerAuth:
@@ -170,6 +293,17 @@ components:
       type: integer
       description: parking id
       example: 123
+    costPerHour:
+      type: integer
+      description: Cost per hour of a parking lot.
+    partnerId:
+      type: string
+      description: Partner id
+      example: 123.oser.Avb
+    numberOfParkingLots:
+      type: integer
+      description: Number of parking lots within a parking lot.
+      example: 100
 
     # Objects
     ErrorObject:
@@ -216,7 +350,8 @@ components:
     ParkingDepartureRequest:
       required:
         - licensePlate
-        - parkingLotId
+        - parkingId
+        - code
       type: object
       description: Data required to exit a vehicle into the parking lot
       additionalProperties: false
@@ -326,19 +461,13 @@ components:
       additionalProperties: false
       properties:
         partnerId:
-          type: string
-          description: Partner id
-          example: 123.oser.Avb
+          $ref: '#/components/schemas/partnerId'
         parkingName:
           $ref: '#/components/schemas/parkingName'
         costPerHour:
-          type: integer
-          description: Cost per hour of a parking lot.
-          example: 1232
+          $ref: '#/components/schemas/costPerHour'
         numberOfParkingLots:
-          type: integer
-          description: Number of parking lots within a parking lot.
-          example: 100
+          $ref: '#/components/schemas/numberOfParkingLots'
     ParkingResponse:
       required:
         - parkingId
@@ -370,3 +499,36 @@ components:
           $ref: '#/components/schemas/parkingId'
         parkingName:
           $ref: '#/components/schemas/parkingName'
+    UpdateParkingRequest:
+      required:
+        - parkingId
+        - costPerHour
+      type: object
+      description: Data required to update parking
+      additionalProperties: false
+      properties:
+        parkingId:
+          $ref: '#/components/schemas/parkingId'
+        costPerHour:
+          $ref: '#/components/schemas/costPerHour'
+    UpdateParkingCompleteRequest:
+      required:
+        - parkingId
+        - partnerId
+        - parkingName
+        - costPerHour
+        - numberOfParkingLots
+      type: object
+      description: Data required to create parking
+      additionalProperties: false
+      properties:
+        parkingId:
+          $ref: '#/components/schemas/parkingId'
+        partnerId:
+          $ref: '#/components/schemas/partnerId'
+        parkingName:
+          $ref: '#/components/schemas/parkingName'
+        costPerHour:
+          $ref: '#/components/schemas/costPerHour'
+        numberOfParkingLots:
+          $ref: '#/components/schemas/numberOfParkingLots'

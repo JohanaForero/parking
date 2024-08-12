@@ -3,17 +3,18 @@ package com.forero.parking.infrastructure.controller;
 import com.forero.parking.application.service.ParkingLotService;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.ParkingLot;
-import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
-import com.forero.parking.infrastructure.mapper.VehicleMapper;
+import com.forero.parking.infrastructure.util.JwtTokenExtractor;
+import com.forero.parking.infrastructure.util.JwtUtil;
 import com.forero.parking.openapi.api.DepartureApi;
-import com.forero.parking.openapi.model.ParkingDepartureRequestDto;
 import com.forero.parking.openapi.model.ParkingDepartureResponseDto;
+import com.forero.parking.openapi.model.ParkingEntranceRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,16 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class DepartureController implements DepartureApi {
     private final ParkingLotService parkingLotService;
     private final ParkingLotMapper parkingLotMapper;
-    private final VehicleMapper vehicleMapper;
     private final HistoryMapper historyMapper;
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN','PARTNER')")
-    public ResponseEntity<ParkingDepartureResponseDto> registerVehicleExit(final ParkingDepartureRequestDto parkingDepartureRequestDto) {
-        final ParkingLot parkingLot = this.parkingLotMapper.toDomain(parkingDepartureRequestDto.getParkingLotId());
-        final Vehicle vehicle = this.vehicleMapper.toDomain(parkingDepartureRequestDto.getLicensePlate());
-
-        final History history = this.parkingLotService.registerVehicleExit(parkingLot, vehicle);
+    @PreAuthorize("hasAuthority('PARTNER')")
+    public ResponseEntity<ParkingDepartureResponseDto> registerVehicleExit(final ParkingEntranceRequestDto parkingDepartureRequestDto) {
+        final ParkingLot parkingLot = this.parkingLotMapper.toDomain(parkingDepartureRequestDto);
+        final String token = JwtTokenExtractor.extractTokenFromHeader();
+        final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
+        final History history = this.parkingLotService.registerVehicleExit(parkingLot, partnerId,
+                parkingDepartureRequestDto.getLicensePlate());
 
         return new ResponseEntity<>(this.historyMapper.toDepartureDto(history), HttpStatus.OK);
     }

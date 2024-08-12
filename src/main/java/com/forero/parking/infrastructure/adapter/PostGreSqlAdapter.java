@@ -2,13 +2,17 @@ package com.forero.parking.infrastructure.adapter;
 
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EntranceException;
+import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
+import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.mapper.HistoryMapper;
 import com.forero.parking.infrastructure.mapper.ParkingLotMapper;
 import com.forero.parking.infrastructure.mapper.ParkingMapper;
+import com.forero.parking.infrastructure.mapper.VehicleMapper;
 import com.forero.parking.infrastructure.repository.HistoryRepository;
 import com.forero.parking.infrastructure.repository.ParkingLotRepository;
 import com.forero.parking.infrastructure.repository.ParkingRepository;
@@ -31,30 +35,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostGreSqlAdapter implements DbPort {
     private static final String LOGGER_PREFIX = String.format("[%s] ", PostGreSqlAdapter.class.getSimpleName());
-    private final VehicleRepository vehicleRepository;
     private final ParkingLotRepository parkingLotRepository;
     private final ParkingRepository parkingRepository;
     private final HistoryRepository historyRepository;
     private final ParkingLotMapper parkingLotMapper;
     private final ParkingMapper parkingMapper;
     private final HistoryMapper historyMapper;
+    private final VehicleMapper vehicleMapper;
+    private final VehicleRepository vehicleRepository;
     private final TimeConfiguration timeConfiguration;
 
     @Override
-    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot) {
-        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(parkingLot.getVehicle().getLicensePlate())
+    public ParkingLot registerVehicleEntry(final ParkingLot parkingLot, final String licensePlate) {
+        this.vehicleRepository.findByLicensePlate(licensePlate)
                 .orElseGet(() -> {
                     final VehicleEntity newVehicleEntity = new VehicleEntity();
-                    newVehicleEntity.setLicensePlate(parkingLot.getVehicle().getLicensePlate());
+                    newVehicleEntity.setLicensePlate(licensePlate);
                     return this.vehicleRepository.save(newVehicleEntity);
                 });
+
         final ParkingEntity parking = this.parkingRepository.findById(parkingLot.getParkingId())
                 .orElse(null);
-
         ParkingLotEntity parkingLotEntity = new ParkingLotEntity();
         final LocalDateTime entranceDate = this.timeConfiguration.now();
         parkingLotEntity.setParking(parking);
-        parkingLotEntity.setVehicle(vehicleEntity);
         parkingLotEntity.setEntranceDate(entranceDate);
         parkingLotEntity.setCode(parkingLot.getCode());
         parkingLotEntity = this.parkingLotRepository.save(parkingLotEntity);
@@ -63,8 +67,8 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public History registerHistoryEntry(final ParkingLot parkingLot) {
-        final VehicleEntity vehicleEntity = this.vehicleRepository.findById(parkingLot.getVehicle().getId())
+    public History registerHistoryEntry(final ParkingLot parkingLot, final String licensePlate) {
+        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(licensePlate)
                 .orElse(null);
         final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
                 .orElse(null);
@@ -79,24 +83,10 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public ParkingLot getParkingLotByLicensePlate(final String licensePlate) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findByVehicleLicensePlate(licensePlate)
-                .orElse(null);
-        return this.parkingLotMapper.toDomain(parkingLotEntity);
-    }
-
-    @Override
-    public LocalDateTime registerVehicleExit(final ParkingLot parkingLot) {
-        final ParkingLotEntity parkingLotEntity = this.parkingLotRepository.findById(parkingLot.getId())
-                .orElse(new ParkingLotEntity());
-
-        final LocalDateTime entranceDate = parkingLotEntity.getEntranceDate();
-
-        parkingLotEntity.setVehicle(null);
-        parkingLotEntity.setEntranceDate(null);
-        this.parkingLotRepository.save(parkingLotEntity);
-
-        return entranceDate;
+    public Vehicle getVehicle(final String licensePlate) {
+        final VehicleEntity vehicleEntity = this.vehicleRepository.findByLicensePlate(licensePlate)
+                .orElseThrow(() -> new DepartureException.VehicleNoFound("Vehicle no found: " + licensePlate));
+        return this.vehicleMapper.toDomain(vehicleEntity);
     }
 
     @Override
@@ -113,13 +103,13 @@ public class PostGreSqlAdapter implements DbPort {
                 .orElse(null);
     }
 
-    @Override
-    public List<ParkingLot> getVehiclesInParking() {
-        return this.parkingLotRepository.findByVehicleIsNotNull()
-                .stream()
-                .map(this.parkingLotMapper::toDomain)
-                .toList();
-    }
+//    @Override
+//    public List<ParkingLot> getVehiclesInParking() {
+//        return this.parkingLotRepository.findByVehicleIsNotNull()
+//                .stream()
+//                .map(this.parkingLotMapper::toDomain)
+//                .toList();
+//    }
 
     @Override
     public int saveParking(final Parking parking) {
@@ -160,18 +150,97 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public boolean thereIsAPlaqueInTheParking(@NonNull final String licensePlate, final int parkingId) {
-        log.info(LOGGER_PREFIX, "[thereIsAPlaqueInTheParking] Request {} {}", licensePlate, parkingId);
-        final boolean result = this.parkingLotRepository.existsByParking_IdAndVehicle_LicensePlate(parkingId, licensePlate);
-        log.info(LOGGER_PREFIX + "[thereIsAPlaqueInTheParking] Response {}", result);
+    public Parking findById(final long parkingId) {
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException
+                        .ParkingNoFoundException("Parking not found: " + parkingId));
+        return this.parkingMapper.toModel(parkingEntity);
+    }
+
+    @Override
+    public boolean existsVehicleInParking(final int parkingId, final String licensePlate) {
+        log.info(LOGGER_PREFIX, "[existsVehicleInParking] Request {} {} {}", parkingId, licensePlate);
+        final boolean result = this.historyRepository.existsByParkingLotParkingIdAndVehicleLicensePlateAndDepartureDateIsNullAndTotalPaidIsNull(parkingId, licensePlate);
+        log.info(LOGGER_PREFIX + "[existsParkingByPartnerId] Response {}", result);
         return result;
     }
 
     @Override
-    public boolean existsCodeInParking(final long parkingId, final int code) {
-        log.info(LOGGER_PREFIX, "[existsCodeInParking] Request {} {}", parkingId, code);
-        final boolean result = this.parkingLotRepository.existsByParkingIdAndCode(parkingId, code);
-        log.info(LOGGER_PREFIX + "[existsCodeInParking] Response {}", result);
+    public boolean thereIsAVehicleInTheParkingLot(final ParkingLot parkingLot, final String licensePlate) {
+        log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Request {} {} {}", parkingLot.getParkingId(),
+                parkingLot.getCode(), licensePlate);
+        final boolean result =
+                this.historyRepository.existsByParkingLotParkingIdAndParkingLotCodeAndVehicleLicensePlateAndDepartureDateIsNullAndTotalPaidIsNull(parkingLot.getParkingId().intValue(),
+                        parkingLot.getCode(), licensePlate);
+        log.info(LOGGER_PREFIX + "[ThereIsAVehicleInTheParkingLot] Response {}", result);
         return result;
+    }
+
+    @Override
+    public ParkingLot getParkingLotByCodeAndParkingEntry(final int code, final int parkingId, final String licensePlate) {
+        final HistoryEntity history =
+                this.historyRepository.findByParkingLotParkingIdAndParkingLotCodeAndVehicleLicensePlateAndDepartureDateIsNullAndTotalPaidIsNull(
+                        parkingId, code, licensePlate).orElseThrow(() -> new DepartureException.VehicleNoFound("The car is not in that code"));
+        final ParkingLotEntity parkingLotEntity =
+                this.parkingLotRepository.findById(history.getParkingLot().getId()).orElse(null);
+        return this.parkingLotMapper.toDomain(parkingLotEntity);
+    }
+
+    @Override
+    public boolean codeIsFree(final int parkingId, final int code) {
+        final boolean result =
+                this.historyRepository.existsByParkingLotParkingIdAndParkingLotCodeAndDepartureDateIsNullAndTotalPaidIsNull(parkingId, code);
+        log.info(LOGGER_PREFIX + "[codeIsFree] Response {}", result);
+        return result;
+    }
+
+    @Override
+    public List<Parking> getAllParkings() {
+        final List<ParkingEntity> parkings = this.parkingRepository.findAll();
+        return this.parkingMapper.toModel(parkings);
+    }
+
+    @Override
+    public void deleteParking(final int parkingId) {
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById((long) parkingId).orElseThrow(() -> new ParkingException
+                        .ParkingNoFoundException("Parking not found: " + parkingId));
+        final List<ParkingLotEntity> parkingLots = this.parkingLotRepository.findByParkingId(parkingEntity.getId());
+        for (final ParkingLotEntity parkingLot : parkingLots) {
+            final List<HistoryEntity> historyEntries = this.historyRepository.findByParkingLotId(parkingLot.getId());
+
+            this.historyRepository.deleteAll(historyEntries);
+
+            this.parkingLotRepository.delete(parkingLot);
+        }
+        this.parkingRepository.delete(parkingEntity);
+    }
+
+    @Override
+    public void updatePartially(final Parking parking) {
+        final long parkingId = parking.getId();
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException
+                        .ParkingNoFoundException("Parking not found: " + parkingId));
+        parkingEntity.setCostPerHour(parking.getCostPerHour());
+        this.parkingRepository.save(parkingEntity);
+    }
+
+    @Override
+    public void updateParking(final Parking parking) {
+        final long parkingId = parking.getId();
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException
+                        .ParkingNoFoundException("Parking not found: " + parkingId));
+        parkingEntity.setParkingName(parking.getName());
+        parkingEntity.setPartnerId(parking.getPartnerId());
+        parkingEntity.setNumberOfParkingLots(parking.getNumberOfParkingLots());
+        parkingEntity.setCostPerHour(parking.getCostPerHour());
+        this.parkingRepository.save(parkingEntity);
+    }
+
+    @Override
+    public boolean getCurrentParkingName(final Parking parking) {
+        return this.parkingRepository.existsByIdAndParkingName(parking.getId(), parking.getName());
     }
 }

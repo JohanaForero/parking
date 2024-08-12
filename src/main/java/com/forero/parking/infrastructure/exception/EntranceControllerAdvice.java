@@ -1,6 +1,7 @@
 package com.forero.parking.infrastructure.exception;
 
 import com.forero.parking.domain.exception.EntranceException;
+import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.infrastructure.controller.EntranceController;
 import com.forero.parking.openapi.model.ErrorObjectDto;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 
@@ -24,7 +26,8 @@ public class EntranceControllerAdvice {
             new SimpleEntry<>(EntranceException.NotFoundParkingLotException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.VehicleInsideException.class, HttpStatus.BAD_REQUEST),
             new SimpleEntry<>(EntranceException.NotFoundParkingLotInParkingException.class, HttpStatus.BAD_REQUEST),
-            new SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.BAD_REQUEST),
+            new SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.FORBIDDEN),
+            new AbstractMap.SimpleEntry<>(ParkingException.UserNoAuthorized.class, HttpStatus.FORBIDDEN),
             new SimpleEntry<>(EntranceException.OccupiedException.class, HttpStatus.BAD_REQUEST));
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -61,6 +64,19 @@ public class EntranceControllerAdvice {
         errorObjectDto.message(entranceException.getMessage());
 
         final HttpStatus httpStatus = HTTP_STATUS_BY_RUNTIME_EXCEPTION_CLASS.getOrDefault(entranceException.getClass(),
+                HttpStatus.NOT_EXTENDED);
+
+        return new ResponseEntity<>(errorObjectDto, httpStatus);
+    }
+
+    @ExceptionHandler(ParkingException.class)
+    public ResponseEntity<ErrorObjectDto> handlerEntranceException(final ParkingException parkingException) {
+        log.error("{} [handlerEntranceException] Caught exception", LOGGER_PREFIX, parkingException);
+
+        final ErrorObjectDto errorObjectDto = new ErrorObjectDto();
+        errorObjectDto.message(parkingException.getMessage());
+
+        final HttpStatus httpStatus = HTTP_STATUS_BY_RUNTIME_EXCEPTION_CLASS.getOrDefault(parkingException.getClass(),
                 HttpStatus.NOT_EXTENDED);
 
         return new ResponseEntity<>(errorObjectDto, httpStatus);

@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 public class ParkingLot {
     private Long id;
 
-    private Vehicle vehicle;
-
     private LocalDateTime entranceDate;
 
     private Parking parking;

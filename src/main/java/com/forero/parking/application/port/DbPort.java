@@ -3,24 +3,23 @@ package com.forero.parking.application.port;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
+import com.forero.parking.domain.model.Vehicle;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DbPort {
-    ParkingLot registerVehicleEntry(ParkingLot parkingLot);
+    ParkingLot registerVehicleEntry(ParkingLot parkingLot, String licensePlate);
 
-    History registerHistoryEntry(ParkingLot parkingLot);
-
-    ParkingLot getParkingLotByLicensePlate(String licensePlate);
-
-    LocalDateTime registerVehicleExit(ParkingLot parkingLot);
+    History registerHistoryEntry(ParkingLot parkingLot, String licensePlate);
 
     History registerHistoryExit(String licensePlate, long parkingLotId, LocalDateTime entranceDate,
                                 LocalDateTime departureDate, BigDecimal totalPaid);
 
-    List<ParkingLot> getVehiclesInParking();
+    boolean thereIsAVehicleInTheParkingLot(ParkingLot parkingLot, String licensePlate);
+
+    boolean codeIsFree(int parkingId, int code);
 
     int saveParking(Parking parking);
 
@@ -28,11 +27,26 @@ public interface DbPort {
 
     List<Parking> findAllParking(String partnerId);
 
+    List<Parking> getAllParkings();
+
     int getNumberOfParkingLots(int parkingId);
 
     boolean existsParkingByPartnerId(int parkingId, String partnerId);
 
-    boolean thereIsAPlaqueInTheParking(String licensePlate, int parkingId);
+    Vehicle getVehicle(String licensePlate);
 
-    boolean existsCodeInParking(long parkingId, int code);
+    Parking findById(long parkingId);
+
+    boolean existsVehicleInParking(int parkingId, String licensePlate);
+
+    ParkingLot getParkingLotByCodeAndParkingEntry(int code, int parkingId, String licensePlate);
+
+    void deleteParking(int parkingId);
+
+    void updatePartially(Parking parking);
+
+    void updateParking(Parking parking);
+
+    boolean getCurrentParkingName(Parking parking);
+
 }

@@ -49,4 +49,6 @@ public interface DbPort {
 
     boolean getCurrentParkingName(Parking parking);
 
+    List<Vehicle> getAllVehicleByParking(int parkingId);
+
 }

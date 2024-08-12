@@ -2,6 +2,7 @@ package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.model.Parking;
+import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.util.JwtUtil;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
@@ -47,5 +48,16 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     public void updateParking(final Parking parking) {
         this.validationService.validateNameChange(parking);
         this.dbPort.updateParking(parking);
+    }
+
+    public List<Vehicle> getVehiclesInParking(final String token, final int parkingId) {
+        final List<Vehicle> vehicles = this.dbPort.getAllVehicleByParking(parkingId);
+        final boolean isPartner = JwtUtil.isUserPartner(token);
+        if (!isPartner) {
+            return vehicles;
+        }
+        final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
+        this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
+        return vehicles;
     }
 }

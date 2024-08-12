@@ -243,4 +243,10 @@ public class PostGreSqlAdapter implements DbPort {
     public boolean getCurrentParkingName(final Parking parking) {
         return this.parkingRepository.existsByIdAndParkingName(parking.getId(), parking.getName());
     }
+
+    @Override
+    public List<Vehicle> getAllVehicleByParking(final int parkingId) {
+//        List<ParkingEntity> parkingEntities = this.historyRepository.findAll
+        return List.of();
+    }
 }

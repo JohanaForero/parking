@@ -24,10 +24,6 @@ public abstract class BaseIT {
 
     protected static final String BEARER = "Bearer ";
 
-    protected static final String ROLE_PARTNER = "PARTNER";
-
-    protected static final String USERNAME_PARTNER = "genesis@gmail.com";
-
     protected static final String ADMIN_TOKEN =
             "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklGdXFsT1JhbFhtcGlycWxfbnV5ODU" +
                     "5bDNrNk9tZVNVZlJPeTA1Z0dqd3MifQ.eyJleHAiOjk3MjE0NTAzMjksImlhdCI6MTcyMTQyODcyOSwianRpIjoiNjg4ZjYzMTItZWR" +

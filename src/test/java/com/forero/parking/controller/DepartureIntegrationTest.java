@@ -10,7 +10,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -119,7 +118,6 @@ class DepartureIntegrationTest extends BaseIT {
     }
 
     @Test
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleExit_withValidData_shouldReturnParkingDepartureResponseDto() throws Exception {
         //Given
         final String licensePlate = "123ABc";

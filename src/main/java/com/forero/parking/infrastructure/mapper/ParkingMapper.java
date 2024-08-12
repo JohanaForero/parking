@@ -24,7 +24,6 @@ public interface ParkingMapper {
     ParkingEntity toEntity(Parking parking);
 
     @Mapping(target = "name", source = "parkingName")
-    @Mapping(target = "id", source = "id")
     Parking toModel(ParkingEntity parkingEntity);
 
     @Mapping(source = "id", target = "parkingId")
@@ -32,9 +31,6 @@ public interface ParkingMapper {
     ParkingDto parkingToParkingDto(Parking parking);
 
     @Mapping(source = "name", target = "parkingName")
-    @Mapping(source = "costPerHour", target = "costPerHour")
-    @Mapping(source = "numberOfParkingLots", target = "numberOfParkingLots")
-    @Mapping(source = "partnerId", target = "partnerId")
     ParkingRequestDto toDto(Parking parking);
 
     List<ParkingDto> parkingListToParkingDtoList(List<Parking> parkings);

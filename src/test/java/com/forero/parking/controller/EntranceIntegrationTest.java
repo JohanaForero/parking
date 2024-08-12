@@ -10,7 +10,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -57,7 +56,6 @@ class EntranceIntegrationTest extends BaseIT {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideParkingLotNotExists")
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withParkingLotNotExists_shouldThrowBadRequest(final String testName,
                                                                                  final long code) throws Exception {
         //Give
@@ -85,7 +83,6 @@ class EntranceIntegrationTest extends BaseIT {
     }
 
     @Test
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
         //Given
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
@@ -119,7 +116,6 @@ class EntranceIntegrationTest extends BaseIT {
     }
 
     @Test
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withVehicleInside_shouldThrowBadRequest() throws Exception {
         //Given
         final String licensePlate = "123ABc";
@@ -158,7 +154,6 @@ class EntranceIntegrationTest extends BaseIT {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("prohibitedFormatLicense")
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withInvalidLicensePlateInvalid_shouldThrowBadRequest(final String testName,
                                                                                         final String licensePlate) throws Exception {
         //Given
@@ -204,7 +199,6 @@ class EntranceIntegrationTest extends BaseIT {
     }
 
     @Test
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withValidData_shouldReturnParkingEntranceResponseDto() throws Exception {
         //Given
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
@@ -233,7 +227,6 @@ class EntranceIntegrationTest extends BaseIT {
     }
 
     @Test
-    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
     void test_RegisterVehicleEntry_withValidDataToParkingNotAuthorized_shouldReturnUserNotAutorized() throws Exception {
         //Given
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
@@ -260,7 +253,5 @@ class EntranceIntegrationTest extends BaseIT {
         final String body = response.andReturn().getResponse().getContentAsString();
         final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
         Assertions.assertEquals(expected, actual);
-
-
     }
 }

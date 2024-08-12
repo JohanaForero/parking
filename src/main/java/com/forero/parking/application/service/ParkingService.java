@@ -1,8 +1,10 @@
 package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.agregate.Pagination;
+import com.forero.parking.domain.agregate.VehiclePageResult;
+import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
-import com.forero.parking.domain.model.Vehicle;
 import com.forero.parking.infrastructure.util.JwtUtil;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
@@ -50,14 +52,41 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
         this.dbPort.updateParking(parking);
     }
 
-    public List<Vehicle> getVehiclesInParking(final String token, final int parkingId) {
-        final List<Vehicle> vehicles = this.dbPort.getAllVehicleByParking(parkingId);
+    public VehiclePageResult<History> getVehiclesInParking(final String token, final Parking parking,
+                                                           final Pagination pagination) {
+        final VehiclePageResult<History> vehiclesPageResult = new VehiclePageResult<>();
         final boolean isPartner = JwtUtil.isUserPartner(token);
         if (!isPartner) {
-            return vehicles;
+            final List<History> histories = this.dbPort.getVehicles(parking.getId().intValue(), pagination);
+            vehiclesPageResult.setVehicles(histories);
+            final Pagination paginationResult = this.buildPagination(pagination, parking.getId().intValue());
+            vehiclesPageResult.setPagination(paginationResult);
+            return vehiclesPageResult;
         }
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
-        this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
-        return vehicles;
+        this.validationService.validateParkingBelongsToPartner(parking.getId().intValue(), partnerId);
+        final List<History> historiesPartner = this.dbPort.getVehicles(parking.getId().intValue(), pagination);
+        vehiclesPageResult.setVehicles(historiesPartner);
+        final Pagination paginationResult = this.buildPagination(pagination, parking.getId().intValue());
+        vehiclesPageResult.setPagination(paginationResult);
+        return vehiclesPageResult;
     }
+
+    private Pagination buildPagination(final Pagination paginationRequest, final int parkingId) {
+        final int totalVehicles = this.dbPort.getTotalVehiclesToAdmin(parkingId);
+        final int pageSize = paginationRequest.getPageSize();
+        final int totalPages = this.calculateTotalPages(totalVehicles, pageSize);
+        paginationRequest.setTotal(totalVehicles);
+        paginationRequest.setTotalPages(totalPages);
+        return paginationRequest;
+    }
+
+    public int calculateTotalPages(final int totalItems, final int itemsPerPage) {
+        if (itemsPerPage == 0) {
+            return 0;
+        }
+        return (int) Math.ceil((double) totalItems / itemsPerPage);
+    }
+
+
 }

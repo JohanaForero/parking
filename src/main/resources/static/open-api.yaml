@@ -70,8 +70,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
-  /vehicles/{parkingId}:
-    get:
+  /vehicles:
+    post:
       tags:
         - Parking
       summary: Vehicles currently in the parking
@@ -79,20 +79,47 @@ paths:
       operationId: getVehiclesInParking
       security:
         - bearerAuth: [ ]
-      parameters:
-        - name: parkingId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: The ID of the parking to retrieve
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehiclesRequest'
       responses:
         200:
           description: The vehicles have been listed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ParkingVehiclesResponse'
+                $ref: '#/components/schemas/VehiclesResponse'
+        400:
+          description: Bad Request - If the data in the request is not correct, return INVALID_PARAMETERS.
+            This can occur if the request contains invalid parameters or data that does not meet the required
+            constraints.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        403:
+          description: Forbidden - If the Token does not have the necessary permissions, return FORBIDDEN_EXCEPTION.
+            The client is not associated with the company and is not allowed to access the resource, return
+            CUSTOMER_NOT_ALLOWED.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Not Found - If the resource list is empty, return EMPTY_LIST.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        500:
+          description: Internal Server Error - Use it as a General System Error, return INTERNAL_SERVER_ERROR.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
   /email:
     post:
       tags:
@@ -378,16 +405,31 @@ components:
           type: string
           description: total to paid
           example: 10,000.00
-    ParkingVehiclesResponse:
+    VehiclesResponse:
       type: object
       required:
         - vehicles
+        - paginationResponse
       properties:
         vehicles:
           type: array
           items:
             $ref: '#/components/schemas/Vehicle'
-      description: List of vehicles in the parking
+          description: List of vehicles in the parking
+        paginationResponse:
+          $ref: '#/components/schemas/PaginationResponse'
+    PaginationResponse:
+      type: object
+      required:
+        - total
+        - totalPages
+      properties:
+        total:
+          type: integer
+          description: Total of items.
+        totalPages:
+          type: integer
+          description: Total number of pages.
     ParkingEmailRequest:
       required:
         - email
@@ -539,3 +581,29 @@ components:
           $ref: '#/components/schemas/costPerHour'
         numberOfParkingLots:
           $ref: '#/components/schemas/numberOfParkingLots'
+    VehiclesRequest:
+      required:
+        - parkingId
+        - paginationRequest
+      type: object
+      description: Data required to list vehicles
+      additionalProperties: false
+      properties:
+        parkingId:
+          $ref: '#/components/schemas/parkingId'
+        paginationRequest:
+          $ref: '#/components/schemas/PaginationRequest'
+    PaginationRequest:
+      type: object
+      required:
+        - page
+        - pageSize
+      properties:
+        page:
+          type: integer
+          description: Page number to retrieve.
+          default: 0
+        pageSize:
+          type: integer
+          description: Number of items per page.
+          default: 10

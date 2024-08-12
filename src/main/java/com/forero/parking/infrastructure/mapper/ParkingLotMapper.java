@@ -3,7 +3,6 @@ package com.forero.parking.infrastructure.mapper;
 import com.forero.parking.domain.model.ParkingLot;
 import com.forero.parking.infrastructure.repository.entity.ParkingLotEntity;
 import com.forero.parking.openapi.model.ParkingEntranceRequestDto;
-import com.forero.parking.openapi.model.ParkingVehiclesResponseDto;
 import com.forero.parking.openapi.model.VehicleDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -26,16 +25,16 @@ public interface ParkingLotMapper {
     @Mapping(target = "parking.name", source = "parking.parkingName")
     ParkingLot toDomain(ParkingLotEntity parkingLotEntity);
 
-    default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {
-        if (parkingLots == null) {
-            return null;
-        }
-
-        final ParkingVehiclesResponseDto parkingVehiclesResponseDto = new ParkingVehiclesResponseDto();
-        parkingVehiclesResponseDto.vehicles(this.toDtos(parkingLots));
-
-        return parkingVehiclesResponseDto;
-    }
+//    default ParkingVehiclesResponseDto toDto(final List<ParkingLot> parkingLots) {
+//        if (parkingLots == null) {
+//            return null;
+//        }
+//
+//        final ParkingVehiclesResponseDto parkingVehiclesResponseDto = new ParkingVehiclesResponseDto();
+//        parkingVehiclesResponseDto.vehicles(this.toDtos(parkingLots));
+//
+//        return parkingVehiclesResponseDto;
+//    }
 
     List<VehicleDto> toDtos(List<ParkingLot> parkingLots);
 

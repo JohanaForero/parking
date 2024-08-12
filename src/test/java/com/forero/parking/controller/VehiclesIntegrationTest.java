@@ -1,8 +1,11 @@
 package com.forero.parking.controller;
 
 import com.forero.parking.BaseIT;
-import com.forero.parking.openapi.model.ParkingVehiclesResponseDto;
+import com.forero.parking.openapi.model.PaginationRequestDto;
+import com.forero.parking.openapi.model.PaginationResponseDto;
 import com.forero.parking.openapi.model.VehicleDto;
+import com.forero.parking.openapi.model.VehiclesRequestDto;
+import com.forero.parking.openapi.model.VehiclesResponseDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -54,6 +57,13 @@ class VehiclesIntegrationTest extends BaseIT {
         this.jdbcTemplate.update("INSERT INTO history (parking_lot_id, vehicle_id, entrance_date) " +
                         "VALUES (?,?,?)", this.parkingLotId("2024-07-20 15:31:11.141042"),
                 this.vehicleId("ABD124"), "2024-07-20 15:31:11.141042");
+        final PaginationRequestDto paginationRequestDto = new PaginationRequestDto();
+        paginationRequestDto.setPage(1);
+        paginationRequestDto.setPageSize(1);
+        final VehiclesRequestDto vehiclesRequestDto = new VehiclesRequestDto();
+        vehiclesRequestDto.setParkingId(this.parkingId("test16"));
+        vehiclesRequestDto.setPaginationRequest(paginationRequestDto);
+
         final VehicleDto vehicleDto = new VehicleDto();
         final long vehicleId = this.vehicleId("ABD123");
         final long parkingLot = this.parkingLotId("2024-07-20 15:31:11.141041");
@@ -71,18 +81,23 @@ class VehiclesIntegrationTest extends BaseIT {
         final List<VehicleDto> vehicleDtos = new ArrayList<>();
         vehicleDtos.add(vehicleDto);
         vehicleDtos.add(vehicleDto2);
-        final ParkingVehiclesResponseDto expected = new ParkingVehiclesResponseDto();
+        final PaginationResponseDto paginationResponseDto = new PaginationResponseDto();
+        paginationResponseDto.setTotal(1);
+        paginationResponseDto.setTotalPages(1);
+        final VehiclesResponseDto expected = new VehiclesResponseDto();
         expected.setVehicles(vehicleDtos);
+        expected.setPaginationResponse(paginationResponseDto);
 
         //When
-        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.get(URI.create(BASE_PATH))
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN));
+                .header(AUTHORIZATION, BEARER + ADMIN_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(vehiclesRequestDto)));
 
         //Then
         response.andExpect(MockMvcResultMatchers.status().isOk());
         final String body = response.andReturn().getResponse().getContentAsString();
-        final ParkingVehiclesResponseDto actual = OBJECT_MAPPER.readValue(body, ParkingVehiclesResponseDto.class);
+        final VehiclesResponseDto actual = OBJECT_MAPPER.readValue(body, VehiclesResponseDto.class);
         Assertions.assertEquals(expected, actual);
     }
 }

@@ -2,6 +2,7 @@ package com.forero.parking.infrastructure.adapter;
 
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.agregate.Pagination;
 import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
@@ -24,6 +25,9 @@ import com.forero.parking.infrastructure.repository.entity.VehicleEntity;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -248,5 +252,23 @@ public class PostGreSqlAdapter implements DbPort {
     public List<Vehicle> getAllVehicleByParking(final int parkingId) {
 //        List<ParkingEntity> parkingEntities = this.historyRepository.findAll
         return List.of();
+    }
+
+    @Override
+    public int getTotalVehiclesToAdmin(final int parkingId) {
+        final Long result = this.historyRepository.countVehiclesInParking(parkingId);
+        return result.intValue();
+    }
+
+    @Override
+    public List<History> getVehicles(final int parkingId, @NonNull final Pagination pagination) {
+        final int page = pagination.getPage();
+        final int pageSize = pagination.getPageSize();
+        final Pageable pageable = PageRequest.of(page, pageSize);
+        final Page<HistoryEntity> historyEntities = this.historyRepository.findActiveHistoriesByParkingId(parkingId, pageable);
+        log.info(LOGGER_PREFIX + "[getVehiclesAdmin] Response {}", historyEntities);
+        return historyEntities.stream()
+                .map(this.historyMapper::toDomain)
+                .toList();
     }
 }

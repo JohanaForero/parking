@@ -17,7 +17,7 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public List<Parking> getParkings(final String token) {
-        final boolean isPartner = JwtUtil.isUserSocio(token);
+        final boolean isPartner = JwtUtil.isUserPartner(token);
         if (!isPartner) {
             return this.dbPort.getAllParkings();
         }
@@ -26,7 +26,7 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public Parking getParking(final int idParking, final String token) {
-        final boolean isPartner = JwtUtil.isUserSocio(token);
+        final boolean isPartner = JwtUtil.isUserPartner(token);
         if (!isPartner) {
             return this.dbPort.findById(idParking);
         }

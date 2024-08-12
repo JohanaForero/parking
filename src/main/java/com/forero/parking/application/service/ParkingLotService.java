@@ -21,7 +21,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         final int numberOfParkingLots = this.dbPort.getNumberOfParkingLots(parkingId);
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         this.validationService.validateParkingLotExists(parkingLot.getCode(), numberOfParkingLots);
-        this.validationService.validateVehicleInParkingAndCodeActual(parkingId, licensePlate);
+        this.validationService.validateVehicleInParkingAndCurrentCode(parkingId, licensePlate);
         this.validationService.validateThatTheCodeIsNotOccupied(parkingId, parkingLot.getCode());
 
         this.validationService.validateParkingLotFree(parkingLot, licensePlate);

@@ -24,8 +24,8 @@ public record ValidationService(DbPort dbPort) {
 
     }
 
-    public void validateVehicleInParkingAndCodeActual(final int parkingId,
-                                                      final String licensePlate) {
+    public void validateVehicleInParkingAndCurrentCode(final int parkingId,
+                                                       final String licensePlate) {
         final boolean existVehicleInParking = this.dbPort.existsVehicleInParking(parkingId, licensePlate);
         if (existVehicleInParking) {
             throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate " +

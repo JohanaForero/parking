@@ -84,37 +84,39 @@ class EntranceIntegrationTest extends BaseIT {
         Assertions.assertEquals(expected, actual);
     }
 
-//    @Test
-//    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
-//    void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
-//        //Given
-//        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
-//                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test7", 1200, 80);
-//        final int parkingId = this.parkingId("test7");
-//        this.jdbcTemplate.update("INSERT INTO vehicle (license_plate) VALUES (?, ?)", 1, "ABc123");
-//        this.jdbcTemplate.update("INSERT INTO parking_lot (entrance_date, parking_id, code) VALUES (?," +
-//                " ?, ?)", "2024-07-20 15:31:11.141046", parkingId, 12);
-//
-//        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
-//        parkingEntranceRequestDto.setLicensePlate("ABC341");
-//        parkingEntranceRequestDto.setCode(12L);
-//        parkingEntranceRequestDto.setParkingId(this.parkingId("test7"));
-//
-//        final ErrorObjectDto expected = new ErrorObjectDto();
-//        expected.message(String.format("Parking lot %d is not free", parkingEntranceRequestDto.getCode()));
-//
-//        //When
-//        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
-//                .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
-//                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
-//
-//        //Then
-//        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
-//        final String body = response.andReturn().getResponse().getContentAsString();
-//        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
-//        Assertions.assertEquals(expected, actual);
-//    }
+    @Test
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withParkingLotNotFree_shouldThrowBadRequest() throws Exception {
+        //Given
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test199", 1200, 80);
+        final int parkingId = this.parkingId("test199");
+        this.jdbcTemplate.update("INSERT INTO vehicle (license_plate) VALUES ( ?)", "ABR123");
+        this.jdbcTemplate.update("INSERT INTO parking_lot (entrance_date, parking_id, code) VALUES (?," +
+                " ?, ?)", "2024-07-20 15:31:11.141046", parkingId, 12);
+        this.jdbcTemplate.update("INSERT INTO history (parking_lot_id, vehicle_id, entrance_date) " +
+                "VALUES (?,?,?)", this.parkingLotId(parkingId), this.vehicleId("ABR123"), "2024-07-20 15:31:11.141046");
+
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate("ABC341");
+        parkingEntranceRequestDto.setCode(12L);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("test199"));
+
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message(String.format("Parking code %d is not free", parkingEntranceRequestDto.getCode()));
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        //Then
+        response.andExpect(MockMvcResultMatchers.status().isBadRequest());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+    }
 
     @Test
     @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
@@ -123,12 +125,13 @@ class EntranceIntegrationTest extends BaseIT {
         final String licensePlate = "123ABc";
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test16", 1200, 80);
-        final long parkingId = this.parkingId("test16");
+        final int parkingId = this.parkingId("test16");
         this.jdbcTemplate.update("INSERT INTO vehicle (license_plate) VALUES (?)", licensePlate);
+        final int vehicleId = this.vehicleId(licensePlate);
         this.jdbcTemplate.update("INSERT INTO parking_lot (entrance_date, parking_id, code) VALUES (?, ?, ?)",
                 "2024-07-20 15:31:11.141046", parkingId, 2);
         this.jdbcTemplate.update("INSERT INTO history (parking_lot_id, vehicle_id, entrance_date) " +
-                "VALUES (?,?,?)", this.parkingLotId(this.parkingId("test16"), this.vehicleId(licensePlate)), "2024-07" +
+                "VALUES (?,?,?)", this.parkingLotId(parkingId), vehicleId, "2024-07" +
                 "-20 " +
                 "15:31:11.141046");
 
@@ -138,8 +141,7 @@ class EntranceIntegrationTest extends BaseIT {
         parkingEntranceRequestDto.setParkingId(this.parkingId("test16"));
 
         final ErrorObjectDto expected = new ErrorObjectDto();
-        expected.message(String.format("Vehicle with license plate %s is already inside in parking %d",
-                licensePlate, parkingId));
+        expected.message(String.format("Vehicle with license plate %s is in parking lot %d", licensePlate, parkingId));
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
@@ -194,10 +196,10 @@ class EntranceIntegrationTest extends BaseIT {
         return id != null ? id : 0;
     }
 
-    private int parkingLotId(final int parkingId, final int code) {
+    private int parkingLotId(final int parkingId) {
         final Integer id = this.jdbcTemplate.queryForObject(
-                "SELECT id FROM parking_lot WHERE code = ? AND parking_id = ?",
-                Integer.class, code, parkingId);
+                "SELECT id FROM parking_lot WHERE parking_id = ?",
+                Integer.class, parkingId);
         return id != null ? id : 0;
     }
 
@@ -206,22 +208,22 @@ class EntranceIntegrationTest extends BaseIT {
     void test_RegisterVehicleEntry_withValidData_shouldReturnParkingEntranceResponseDto() throws Exception {
         //Given
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
-                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes2", 1200, 80);
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes32", 1200, 80);
         final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
         parkingEntranceRequestDto.setLicensePlate("ABC123");
         parkingEntranceRequestDto.setCode(54L);
-        parkingEntranceRequestDto.setParkingId(this.parkingId("tes2"));
-
-        final long idOfLastHistory = this.getIdOfLastHistory();
-
-        final ParkingEntranceResponseDto expected = new ParkingEntranceResponseDto();
-        expected.setId(idOfLastHistory + 1);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("tes32"));
 
         //When
         final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
                 .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        final long parkingLot = this.parkingLotId(this.parkingId("tes32"));
+
+        final ParkingEntranceResponseDto expected = new ParkingEntranceResponseDto();
+        expected.setId(parkingLot);
 
         //Then
         response.andExpect(MockMvcResultMatchers.status().isCreated());
@@ -230,8 +232,35 @@ class EntranceIntegrationTest extends BaseIT {
         Assertions.assertEquals(expected, actual);
     }
 
-    private long getIdOfLastHistory() {
-        final Long id = this.jdbcTemplate.queryForObject("SELECT max(id) FROM history", Long.class);
-        return id != null ? id : 0;
+    @Test
+    @WithMockUser(username = USERNAME_PARTNER, roles = {ROLE_PARTNER})
+    void test_RegisterVehicleEntry_withValidDataToParkingNotAuthorized_shouldReturnUserNotAutorized() throws Exception {
+        //Given
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "tes32", 1200, 80);
+        this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
+                " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8op0", "tes33", 1200, 80);
+        final ParkingEntranceRequestDto parkingEntranceRequestDto = new ParkingEntranceRequestDto();
+        parkingEntranceRequestDto.setLicensePlate("ABC123");
+        parkingEntranceRequestDto.setCode(54L);
+        parkingEntranceRequestDto.setParkingId(this.parkingId("tes33"));
+
+        final ErrorObjectDto expected = new ErrorObjectDto();
+        expected.message("This member is not authorized to access this parking lot.");
+
+
+        //When
+        final ResultActions response = this.mockMvc.perform(MockMvcRequestBuilders.post(URI.create(BASE_PATH))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(AUTHORIZATION, BEARER + PARTNER_TOKEN)
+                .content(OBJECT_MAPPER.writeValueAsBytes(parkingEntranceRequestDto)));
+
+        // Then
+        response.andExpect(MockMvcResultMatchers.status().isForbidden());
+        final String body = response.andReturn().getResponse().getContentAsString();
+        final ErrorObjectDto actual = OBJECT_MAPPER.readValue(body, ErrorObjectDto.class);
+        Assertions.assertEquals(expected, actual);
+
+
     }
 }

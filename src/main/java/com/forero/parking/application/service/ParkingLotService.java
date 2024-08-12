@@ -22,7 +22,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         this.validationService.validateParkingLotExists(parkingLot.getCode(), numberOfParkingLots);
         this.validationService.validateVehicleInParkingAndCodeActual(parkingId, licensePlate);
-        this.validationService.validateQueElCodeNoEsteOcupado(parkingId, parkingLot.getCode());
+        this.validationService.validateThatTheCodeIsNotOccupied(parkingId, parkingLot.getCode());
 
         this.validationService.validateParkingLotFree(parkingLot, licensePlate);
         parkingLot = this.dbPort.registerVehicleEntry(parkingLot, licensePlate);

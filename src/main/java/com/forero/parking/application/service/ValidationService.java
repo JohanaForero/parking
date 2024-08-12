@@ -1,7 +1,6 @@
 package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.DbPort;
-import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.ParkingLot;
@@ -16,8 +15,8 @@ public record ValidationService(DbPort dbPort) {
         }
     }
 
-    public void validateQueElCodeNoEsteOcupado(final int parkingId, final int code) {
-        final boolean isCodeInUse = this.dbPort.codeIsLibre(parkingId, code);
+    public void validateThatTheCodeIsNotOccupied(final int parkingId, final int code) {
+        final boolean isCodeInUse = this.dbPort.codeIsFree(parkingId, code);
         if (isCodeInUse) {
             throw new EntranceException.OccupiedException(String.format("Parking code %s is not free", code));
         }
@@ -28,7 +27,7 @@ public record ValidationService(DbPort dbPort) {
                                                       final String licensePlate) {
         final boolean existVehicleInParking = this.dbPort.existsVehicleInParking(parkingId, licensePlate);
         if (existVehicleInParking) {
-            throw new DepartureException.VehicleNotInParkingException(String.format("Vehicle with license plate " +
+            throw new EntranceException.VehicleInsideException(String.format("Vehicle with license plate " +
                     "%s is in parking lot %s", licensePlate, parkingId));
         }
     }
@@ -42,7 +41,7 @@ public record ValidationService(DbPort dbPort) {
 
     public void validateParkingBelongsToPartner(final int parkingId, final String partnerId) {
         if (this.dbPort.existsParkingByPartnerId(parkingId, partnerId)) {
-            throw new EntranceException.NotFoundParkingException("This member is not authorized to access this parking lot.");
+            throw new ParkingException.UserNoAuthorized("This member is not authorized to access this parking lot.");
         }
     }
 

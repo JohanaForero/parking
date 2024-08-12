@@ -28,4 +28,13 @@ public class ParkingException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class UserNoAuthorized extends ParkingException {
+        @Serial
+        private static final long serialVersionUID = 0;
+
+        public UserNoAuthorized(final String message) {
+            super(message);
+        }
+    }
 }

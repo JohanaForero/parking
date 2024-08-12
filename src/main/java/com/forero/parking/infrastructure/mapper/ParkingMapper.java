@@ -5,6 +5,7 @@ import com.forero.parking.infrastructure.repository.entity.ParkingEntity;
 import com.forero.parking.openapi.model.ParkingDto;
 import com.forero.parking.openapi.model.ParkingRequestDto;
 import com.forero.parking.openapi.model.ParkingsResponseDto;
+import com.forero.parking.openapi.model.UpdateParkingRequestDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -29,8 +30,27 @@ public interface ParkingMapper {
     @Mapping(source = "name", target = "parkingName")
     ParkingDto parkingToParkingDto(Parking parking);
 
+    @Mapping(source = "name", target = "parkingName")
+    @Mapping(source = "costPerHour", target = "costPerHour")
+    @Mapping(source = "numberOfParkingLots", target = "numberOfParkingLots")
+    @Mapping(source = "partnerId", target = "partnerId")
+    ParkingRequestDto toDto(Parking parking);
+
     List<ParkingDto> parkingListToParkingDtoList(List<Parking> parkings);
 
     @Mapping(target = "parkings", source = "parkings")
     ParkingsResponseDto toDto(Integer dummy, List<Parking> parkings);
+
+    @Mapping(target = "id", source = "parkingId")
+    @Mapping(target = "name", ignore = true)
+    @Mapping(target = "partnerId", ignore = true)
+    @Mapping(target = "costPerHour", ignore = true)
+    @Mapping(target = "numberOfParkingLots", ignore = true)
+    Parking toDomain(Long parkingId);
+
+    @Mapping(target = "id", source = "parkingId")
+    @Mapping(target = "name", ignore = true)
+    @Mapping(target = "partnerId", ignore = true)
+    @Mapping(target = "numberOfParkingLots", ignore = true)
+    Parking toDtoToModel(UpdateParkingRequestDto updateParkingRequestDto);
 }

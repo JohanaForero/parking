@@ -19,13 +19,15 @@ public interface DbPort {
 
     boolean thereIsAVehicleInTheParkingLot(ParkingLot parkingLot, String licensePlate);
 
-    boolean codeIsLibre(int parkingId, int code);
+    boolean codeIsFree(int parkingId, int code);
 
     int saveParking(Parking parking);
 
     boolean existsParkingName(String parkingName);
 
     List<Parking> findAllParking(String partnerId);
+
+    List<Parking> getAllParkings();
 
     int getNumberOfParkingLots(int parkingId);
 
@@ -38,4 +40,9 @@ public interface DbPort {
     boolean existsVehicleInParking(int parkingId, String licensePlate);
 
     ParkingLot getParkingLotByCodeAndParkingeEntry(int code, int parkingId, String licensePlate);
+
+    void deleteParking(int parkingId);
+
+    void updatePartially(Parking parking);
+
 }

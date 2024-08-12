@@ -8,6 +8,7 @@ import com.forero.parking.openapi.api.CentralParkingApi;
 import com.forero.parking.openapi.model.ParkingRequestDto;
 import com.forero.parking.openapi.model.ParkingResponseDto;
 import com.forero.parking.openapi.model.ParkingsResponseDto;
+import com.forero.parking.openapi.model.UpdateParkingCompleteRequestDto;
 import com.forero.parking.openapi.model.UpdateParkingRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,5 +72,11 @@ public class ParkingController implements CentralParkingApi {
         final Parking parking = this.parkingMapper.toDtoToModel(updateParkingRequestDto);
         this.parkingService.updatePartially(parking);
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> updateParking(final UpdateParkingCompleteRequestDto updateParkingCompleteRequestDto) {
+        return CentralParkingApi.super.updateParking(updateParkingCompleteRequestDto);
     }
 }

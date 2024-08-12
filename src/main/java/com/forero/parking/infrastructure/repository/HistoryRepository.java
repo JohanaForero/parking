@@ -27,5 +27,4 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
                                                                                                  int code);
 
     List<HistoryEntity> findByParkingLotId(long parkingLot);
-
 }

@@ -19,25 +19,9 @@ public class JwtUtil {
             final JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
             final Object claim = claimsSet.getClaim(claimName);
             return claim != null ? claim.toString() : null;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new JwtException("Error extracting claim from JWT", e);
         }
-    }
-
-    public static String getRoleFromToken(final String token) throws JwtException {
-        try {
-            final JWT jwt = JWTParser.parse(token);
-            final JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
-            final Object roleClaim = claimsSet.getClaim("role");
-            return roleClaim != null ? roleClaim.toString() : null;
-        } catch (Exception e) {
-            throw new JwtException("Error extracting role from JWT", e);
-        }
-    }
-
-    public static boolean isUserAdmin(final String token) throws JwtException {
-        final String role = getRoleFromToken(token);
-        return "admin".equalsIgnoreCase(role);
     }
 
     public static List<String> getRolesFromToken(final String token) {
@@ -50,13 +34,13 @@ public class JwtUtil {
                 return roles != null ? roles : Collections.emptyList();
             }
             return Collections.emptyList();
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             throw new JwtException("Error parsing JWT", e);
         }
     }
 
-    public static boolean isUserSocio(final String token) {
-        List<String> roles = getRolesFromToken(token);
+    public static boolean isUserPartner(final String token) {
+        final List<String> roles = getRolesFromToken(token);
         return roles.contains("PARTNER");
     }
 }

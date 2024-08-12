@@ -43,4 +43,9 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     public void updatePartially(final Parking parking) {
         this.dbPort.updatePartially(parking);
     }
+
+    public void updateParking(final Parking parking) {
+        this.validationService.validateNameChange(parking);
+        this.dbPort.updateParking(parking);
+    }
 }

@@ -177,7 +177,7 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public ParkingLot getParkingLotByCodeAndParkingeEntry(final int code, final int parkingId, final String licensePlate) {
+    public ParkingLot getParkingLotByCodeAndParkingEntry(final int code, final int parkingId, final String licensePlate) {
         final HistoryEntity history =
                 this.historyRepository.findByParkingLotParkingIdAndParkingLotCodeAndVehicleLicensePlateAndDepartureDateIsNullAndTotalPaidIsNull(
                         parkingId, code, licensePlate).orElseThrow(() -> new DepartureException.VehicleNoFound("The car is not in that code"));
@@ -190,7 +190,7 @@ public class PostGreSqlAdapter implements DbPort {
     public boolean codeIsFree(final int parkingId, final int code) {
         final boolean result =
                 this.historyRepository.existsByParkingLotParkingIdAndParkingLotCodeAndDepartureDateIsNullAndTotalPaidIsNull(parkingId, code);
-        log.info(LOGGER_PREFIX + "[codeIsLibre] Response {}", result);
+        log.info(LOGGER_PREFIX + "[codeIsFree] Response {}", result);
         return result;
     }
 
@@ -224,5 +224,23 @@ public class PostGreSqlAdapter implements DbPort {
                         .ParkingNoFoundException("Parking not found: " + parkingId));
         parkingEntity.setCostPerHour(parking.getCostPerHour());
         this.parkingRepository.save(parkingEntity);
+    }
+
+    @Override
+    public void updateParking(final Parking parking) {
+        final long parkingId = parking.getId();
+        final ParkingEntity parkingEntity =
+                this.parkingRepository.findById(parkingId).orElseThrow(() -> new ParkingException
+                        .ParkingNoFoundException("Parking not found: " + parkingId));
+        parkingEntity.setParkingName(parking.getName());
+        parkingEntity.setPartnerId(parking.getPartnerId());
+        parkingEntity.setNumberOfParkingLots(parking.getNumberOfParkingLots());
+        parkingEntity.setCostPerHour(parking.getCostPerHour());
+        this.parkingRepository.save(parkingEntity);
+    }
+
+    @Override
+    public boolean getCurrentParkingName(final Parking parking) {
+        return this.parkingRepository.existsByIdAndParkingName(parking.getId(), parking.getName());
     }
 }

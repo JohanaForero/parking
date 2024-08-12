@@ -3,6 +3,7 @@ package com.forero.parking.application.service;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
+import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,13 @@ public record ValidationService(DbPort dbPort) {
         if (code == 0 || code > numberOfParkingLots) {
             throw new EntranceException.NotFoundParkingLotException(String.format("Parking lot %s not found",
                     code));
+        }
+    }
+
+    public void validateNameChange(final Parking parking) {
+        final boolean currentName = this.dbPort.getCurrentParkingName(parking);
+        if (!currentName) {
+            this.validateParkingNameAvailability(parking.getName());
         }
     }
 }

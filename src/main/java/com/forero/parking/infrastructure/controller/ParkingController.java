@@ -77,6 +77,8 @@ public class ParkingController implements CentralParkingApi {
     @Override
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> updateParking(final UpdateParkingCompleteRequestDto updateParkingCompleteRequestDto) {
-        return CentralParkingApi.super.updateParking(updateParkingCompleteRequestDto);
+        final Parking parking = this.parkingMapper.toDtoToDomain(updateParkingCompleteRequestDto);
+        this.parkingService.updateParking(parking);
+        return ResponseEntity.noContent().build();
     }
 }

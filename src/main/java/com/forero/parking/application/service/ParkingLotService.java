@@ -34,7 +34,7 @@ public record ParkingLotService(DbPort dbPort, ValidationService validationServi
         this.validationService.validateParkingBelongsToPartner(parkingId, partnerId);
         final Vehicle vehicle = this.dbPort.getVehicle(licensePlate);
         final ParkingLot parkingLotResult =
-                this.dbPort.getParkingLotByCodeAndParkingeEntry(parkingLot.getCode(),
+                this.dbPort.getParkingLotByCodeAndParkingEntry(parkingLot.getCode(),
                         parkingLot.getParkingId().intValue(), licensePlate);
 
         final Parking parking = this.dbPort.findById(parkingLotResult.getParkingId());

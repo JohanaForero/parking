@@ -39,10 +39,14 @@ public interface DbPort {
 
     boolean existsVehicleInParking(int parkingId, String licensePlate);
 
-    ParkingLot getParkingLotByCodeAndParkingeEntry(int code, int parkingId, String licensePlate);
+    ParkingLot getParkingLotByCodeAndParkingEntry(int code, int parkingId, String licensePlate);
 
     void deleteParking(int parkingId);
 
     void updatePartially(Parking parking);
+
+    void updateParking(Parking parking);
+
+    boolean getCurrentParkingName(Parking parking);
 
 }

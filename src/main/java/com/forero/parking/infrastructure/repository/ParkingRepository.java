@@ -11,4 +11,6 @@ public interface ParkingRepository extends JpaRepository<ParkingEntity, Long> {
     List<ParkingEntity> findByPartnerId(String partnerId);
 
     boolean existsByIdAndPartnerId(int parkingId, String partnerName);
+
+    boolean existsByIdAndParkingName(Long id, String parkingName);
 }

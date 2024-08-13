@@ -13,6 +13,7 @@ import org.mapstruct.Mapping;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 @Mapper
 public interface VehicleMapper {
@@ -21,10 +22,11 @@ public interface VehicleMapper {
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
     @Mapping(target = "id", source = "vehicle.id")
     @Mapping(target = "code", source = "parkingLot.code")
+    @Mapping(target = "entranceDate", source = "entranceDate")
     VehicleResponseDto toModelToDto(History vehicles);
 
     default OffsetDateTime map(final LocalDateTime localDateTime) {
-        return localDateTime != null ? OffsetDateTime.of(localDateTime, OffsetDateTime.now().getOffset()) : null;
+        return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
     }
 
     @Mapping(target = "pageSize", source = "pageSize")

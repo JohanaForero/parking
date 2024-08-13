@@ -25,14 +25,6 @@ public class VehiclesController implements VehiclesApi {
     private final VehicleMapper vehicleMapper;
     private final ParkingMapper parkingMapper;
 
-//    @Override
-//    public ResponseEntity<ParkingVehiclesResponseDto> getVehiclesInParking(final Integer parkingId) {
-//        final String token = JwtTokenExtractor.extractTokenFromHeader();
-//        final List<Vehicle> vehicles = this.parkingService.getVehiclesInParking(token, parkingId);
-//        return new ResponseEntity<>(this.vehicleMapper.toDto(1, vehicles), HttpStatus.OK);
-//    }
-
-
     @Override
     public ResponseEntity<VehiclesResponseDto> getVehiclesInParking(final VehiclesRequestDto vehiclesRequestDto) {
         final Parking parking = this.parkingMapper.toDomain(vehiclesRequestDto.getParkingId().longValue());

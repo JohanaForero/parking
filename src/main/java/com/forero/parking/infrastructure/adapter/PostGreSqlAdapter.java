@@ -107,14 +107,6 @@ public class PostGreSqlAdapter implements DbPort {
                 .orElse(null);
     }
 
-//    @Override
-//    public List<ParkingLot> getVehiclesInParking() {
-//        return this.parkingLotRepository.findByVehicleIsNotNull()
-//                .stream()
-//                .map(this.parkingLotMapper::toDomain)
-//                .toList();
-//    }
-
     @Override
     public int saveParking(final Parking parking) {
         final ParkingEntity parkingEntity = this.parkingMapper.toEntity(parking);
@@ -249,13 +241,7 @@ public class PostGreSqlAdapter implements DbPort {
     }
 
     @Override
-    public List<Vehicle> getAllVehicleByParking(final int parkingId) {
-//        List<ParkingEntity> parkingEntities = this.historyRepository.findAll
-        return List.of();
-    }
-
-    @Override
-    public int getTotalVehiclesToAdmin(final int parkingId) {
+    public int getTotalVehicles(final int parkingId) {
         final Long result = this.historyRepository.countVehiclesInParking(parkingId);
         return result.intValue();
     }

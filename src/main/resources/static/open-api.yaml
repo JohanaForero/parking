@@ -323,6 +323,11 @@ components:
       type: string
       description: Parking name
       example: PARKING LOT HIRE ME
+    code:
+      type: integer
+      format: int64
+      description: code of parking lot
+      example: 123
     parkingId:
       type: integer
       description: parking id
@@ -394,6 +399,8 @@ components:
           $ref: '#/components/schemas/licensePlate'
         parkingLotId:
           $ref: '#/components/schemas/parkingLotId'
+        code:
+          $ref: '#/components/schemas/code'
     ParkingDepartureResponse:
       required:
         - totalPaid
@@ -414,7 +421,7 @@ components:
         vehicles:
           type: array
           items:
-            $ref: '#/components/schemas/Vehicle'
+            $ref: '#/components/schemas/VehicleResponse'
           description: List of vehicles in the parking
         paginationResponse:
           $ref: '#/components/schemas/PaginationResponse'
@@ -607,3 +614,21 @@ components:
           type: integer
           description: Number of items per page.
           default: 10
+    VehicleResponse:
+      required:
+        - id
+        - licensePlate
+        - code
+      type: object
+      additionalProperties: false
+      description: Response when a vehicle successfully exits the parking lot
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Vehicle id
+          example: 123
+        licensePlate:
+          $ref: '#/components/schemas/licensePlate'
+        code:
+          $ref: '#/components/schemas/code'

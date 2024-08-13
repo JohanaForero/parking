@@ -31,9 +31,18 @@ public class ParkingException extends RuntimeException {
 
     public static class UserNoAuthorized extends ParkingException {
         @Serial
-        private static final long serialVersionUID = 0;
+        private static final long serialVersionUID = 4785244121827151795L;
 
         public UserNoAuthorized(final String message) {
+            super(message);
+        }
+    }
+
+    public static class EmptyList extends ParkingException {
+        @Serial
+        private static final long serialVersionUID = 5156223981447822750L;
+
+        public EmptyList(final String message) {
             super(message);
         }
     }

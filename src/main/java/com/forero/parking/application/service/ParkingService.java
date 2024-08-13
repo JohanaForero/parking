@@ -57,8 +57,9 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
         final VehiclePageResult<History> vehiclesPageResult = new VehiclePageResult<>();
         final boolean isPartner = JwtUtil.isUserPartner(token);
         if (!isPartner) {
-            final List<History> histories = this.dbPort.getVehicles(parking.getId().intValue(), pagination);
-            vehiclesPageResult.setVehicles(histories);
+            final List<History> historiesAdmin = this.dbPort.getVehicles(parking.getId().intValue(), pagination);
+            this.validationService.validateVehicles(historiesAdmin);
+            vehiclesPageResult.setVehicles(historiesAdmin);
             final Pagination paginationResult = this.buildPagination(pagination, parking.getId().intValue());
             vehiclesPageResult.setPagination(paginationResult);
             return vehiclesPageResult;
@@ -66,6 +67,7 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
         final String partnerId = JwtUtil.getClaimFromToken(token, JwtClaimNames.SUB);
         this.validationService.validateParkingBelongsToPartner(parking.getId().intValue(), partnerId);
         final List<History> historiesPartner = this.dbPort.getVehicles(parking.getId().intValue(), pagination);
+        this.validationService.validateVehicles(historiesPartner);
         vehiclesPageResult.setVehicles(historiesPartner);
         final Pagination paginationResult = this.buildPagination(pagination, parking.getId().intValue());
         vehiclesPageResult.setPagination(paginationResult);
@@ -73,7 +75,7 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     private Pagination buildPagination(final Pagination paginationRequest, final int parkingId) {
-        final int totalVehicles = this.dbPort.getTotalVehiclesToAdmin(parkingId);
+        final int totalVehicles = this.dbPort.getTotalVehicles(parkingId);
         final int pageSize = paginationRequest.getPageSize();
         final int totalPages = this.calculateTotalPages(totalVehicles, pageSize);
         paginationRequest.setTotal(totalVehicles);
@@ -87,6 +89,4 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
         }
         return (int) Math.ceil((double) totalItems / itemsPerPage);
     }
-
-
 }

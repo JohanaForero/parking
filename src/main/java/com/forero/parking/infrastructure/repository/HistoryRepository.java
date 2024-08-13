@@ -50,4 +50,14 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
             "AND h.totalPaid IS NULL")
     Page<HistoryEntity> findActiveHistoriesByParkingId(@Param("parkingId") int parkingId, Pageable pageable);
 
+    @Query("SELECT CASE WHEN COUNT(h) > 0 THEN true ELSE false END " +
+            "FROM HistoryEntity h " +
+            "JOIN h.parkingLot pl " +
+            "JOIN pl.parking p " +
+            "WHERE p.id = :parkingId " +
+            "AND h.departureDate IS NULL " +
+            "AND h.totalPaid IS NULL " +
+            "AND pl.code > :code")
+    boolean existsActiveParkingLotWithHigherCode(@Param("parkingId") long parkingId, @Param("code") int code);
 }
+

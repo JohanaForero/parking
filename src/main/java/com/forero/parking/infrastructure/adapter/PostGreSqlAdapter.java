@@ -263,4 +263,12 @@ public class PostGreSqlAdapter implements DbPort {
         final long totalVehicles = this.historyRepository.countVehiclesInParking(parkingId);
         return totalVehicles > 0;
     }
+
+    @Override
+    public boolean isCodeIsLowerThanCurrent(final int parkingId, final int numberOfParkingLots) {
+        final boolean isCodeIsLowerThanCurrent =
+                this.historyRepository.existsActiveParkingLotWithHigherCode(parkingId, numberOfParkingLots);
+        log.info(LOGGER_PREFIX + "[isCodeIsLowerThanCurrent] Response {}", isCodeIsLowerThanCurrent);
+        return isCodeIsLowerThanCurrent;
+    }
 }

@@ -619,6 +619,7 @@ components:
         - id
         - licensePlate
         - code
+        - entranceDate
       type: object
       additionalProperties: false
       description: Response when a vehicle successfully exits the parking lot
@@ -632,3 +633,8 @@ components:
           $ref: '#/components/schemas/licensePlate'
         code:
           $ref: '#/components/schemas/code'
+        entranceDate:
+          type: string
+          format: date-time
+          description: Date of entry of the vehicle into the parking lot
+          example: 2024-07-20T14:30:00Z

@@ -15,6 +15,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +77,13 @@ class VehiclesIntegrationTest extends BaseIT {
         vehicleDto.id(vehicleId);
         vehicleDto.licensePlate("ABD124");
         vehicleDto.code(12L);
+
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        final LocalDateTime localDateTime = LocalDateTime.parse("2024-07-20 15:31:11.141042", formatter);
+
+        final OffsetDateTime entranceDate = localDateTime.atOffset(ZoneOffset.UTC);
+        vehicleDto.setEntranceDate(entranceDate);
 
         final List<VehicleResponseDto> vehicleDtos = new ArrayList<>();
         vehicleDtos.add(vehicleDto);
@@ -133,6 +144,13 @@ class VehiclesIntegrationTest extends BaseIT {
         vehicleDto.licensePlate("ABD124");
         vehicleDto.code(12L);
 
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        final LocalDateTime localDateTime = LocalDateTime.parse("2024-07-20 15:31:11.141042", formatter);
+
+        final OffsetDateTime entranceDate = localDateTime.atOffset(ZoneOffset.UTC);
+        vehicleDto.setEntranceDate(entranceDate);
+
         final List<VehicleResponseDto> vehicleDtos = new ArrayList<>();
         vehicleDtos.add(vehicleDto);
 
@@ -161,7 +179,19 @@ class VehiclesIntegrationTest extends BaseIT {
     void test_getVehiclesInParking_withParkingNotAssociatedWithMyPartnerRolePartner_shouldReturnUserNotFoundException() throws Exception {
         //Given
         final String token =
-                "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklGdXFsT1JhbFhtcGlycWxfbnV5ODU5bDNrNk9tZVNVZlJPeTA1Z0dqd3MifQ.eyJleHAiOjE3MjMyNjQ3MTAsImlhdCI6MTcyMzI0MzExMCwianRpIjoiYjI0ODlhZDQtY2Y1MC00YTg0LWEwYzctMTkzZDc4NGUzM2E1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjI3ODk3OWYwLWNhYjMtNGUxYi1hOTNjLWFmYTAwOGNlMTIzNCIsInR5cCI6IkJlYXJlciIsImF6cCI6InBhcmtpbmctY2xpZW50Iiwic2lkIjoiZmRiOTMxMWQtNDEwMy00MmY0LWE5ZmQtNGNlMTY0MmQzNWVjIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJQQVJUTkVSIiwib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLXBhcmtpbmciLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJsZW9AZ21haWwuY29tIiwiZW1haWwiOiJsZW9AZ21haWwuY29tIn0.FCViiHvW0PiOds35T6Kak2GEoRQVRlBygrvm3x5zy_WzTB35eKnjJy09OWYeVmtA1v27PBR9vQlLB5R7fqDaTUscLxaBbP245baeKCX6UiWMsi-P70CrcuKMEf8URBhHsM1SyzVOsUG87uZ2HAmQrpvQy8N_m3eix3Jp6_v9uFwGiAKyhJ3LXcAZqucwnMxyKY1kcNkiQIH6-OJZKowH0_O0BcgArO0fOJMnrSUCsVOv8WyxYYStLMbUaiCYcLspCDBnTP4mOybfNxy1fCRR5jXBXwa_qIqonim1PXNxpBH1sm0DMJhBWb7J3thJhcdhiTqLcYFmsKOHKXzPtjQjjg";
+                "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklGdXFsT1JhbFhtcGlycWxfbnV5ODU5bDNrNk9tZVNVZlJPeTA1Z0dqd3M" +
+                        "ifQ.eyJleHAiOjE3MjMyNjQ3MTAsImlhdCI6MTcyMzI0MzExMCwianRpIjoiYjI0ODlhZDQtY2Y1MC00YTg0LWEwYzctMTk" +
+                        "zZDc4NGUzM2E1IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXJraW5nIiwiYXVkIjoiYWNjb3VudC" +
+                        "IsInN1YiI6IjI3ODk3OWYwLWNhYjMtNGUxYi1hOTNjLWFmYTAwOGNlMTIzNCIsInR5cCI6IkJlYXJlciIsImF6cCI6InBhc" +
+                        "mtpbmctY2xpZW50Iiwic2lkIjoiZmRiOTMxMWQtNDEwMy00MmY0LWE5ZmQtNGNlMTY0MmQzNWVjIiwiYWNyIjoiMSIsInJl" +
+                        "YWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJQQVJUTkVSIiwib2ZmbGluZV9hY2Nlc3MiLCJkZWZhdWx0LXJvbGVzLXBhcmtpbmc" +
+                        "iLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLW" +
+                        "FjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpb" +
+                        "CIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJsZW9AZ21haWwuY29tIiwiZW1haWwiOiJs" +
+                        "ZW9AZ21haWwuY29tIn0.FCViiHvW0PiOds35T6Kak2GEoRQVRlBygrvm3x5zy_WzTB35eKnjJy09OWYeVmtA1v27PBR9vQl" +
+                        "LB5R7fqDaTUscLxaBbP245baeKCX6UiWMsi-P70CrcuKMEf8URBhHsM1SyzVOsUG87uZ2HAmQrpvQy8N_m3eix3Jp6_v9uF" +
+                        "wGiAKyhJ3LXcAZqucwnMxyKY1kcNkiQIH6-OJZKowH0_O0BcgArO0fOJMnrSUCsVOv8WyxYYStLMbUaiCYcLspCDBnTP4mO" +
+                        "ybfNxy1fCRR5jXBXwa_qIqonim1PXNxpBH1sm0DMJhBWb7J3thJhcdhiTqLcYFmsKOHKXzPtjQjjg";
         this.jdbcTemplate.update("INSERT INTO parking (partner_id, name, Cost_Per_Hour, Number_Of_Parking_Lots)" +
                 " VALUES (?, ?, ?, ?)", "c3198aba-e591-45a4-b751-768570ad8fd0", "test16", 1200, 80);
 

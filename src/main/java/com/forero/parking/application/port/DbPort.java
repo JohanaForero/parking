@@ -54,4 +54,5 @@ public interface DbPort {
 
     List<History> getVehicles(int parkingId, Pagination pagination);
 
+    boolean existsVehiclesInParking(int parkingId);
 }

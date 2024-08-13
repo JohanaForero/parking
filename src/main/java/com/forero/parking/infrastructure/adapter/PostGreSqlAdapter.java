@@ -257,4 +257,10 @@ public class PostGreSqlAdapter implements DbPort {
                 .map(this.historyMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsVehiclesInParking(final int parkingId) {
+        final long totalVehicles = this.historyRepository.countVehiclesInParking(parkingId);
+        return totalVehicles > 0;
+    }
 }

@@ -72,4 +72,11 @@ public record ValidationService(DbPort dbPort) {
     public boolean isEmptyOrNull(final List<History> histories) {
         return histories == null || histories.isEmpty();
     }
+
+    public void parkingIsEmpty(final int parkingId) {
+        final boolean isParkingInUse = this.dbPort.existsVehiclesInParking(parkingId);
+        if (isParkingInUse) {
+            throw new ParkingException.ParkingEmpty("The parking is not empty!");
+        }
+    }
 }

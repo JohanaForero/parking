@@ -40,6 +40,7 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public void deleteParking(final int idParking) {
+        this.validationService.parkingIsEmpty(idParking);
         this.dbPort.deleteParking(idParking);
     }
 

@@ -46,4 +46,13 @@ public class ParkingException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class ParkingEmpty extends ParkingException {
+        @Serial
+        private static final long serialVersionUID = 5694620545216664231L;
+
+        public ParkingEmpty(final String message) {
+            super(message);
+        }
+    }
 }

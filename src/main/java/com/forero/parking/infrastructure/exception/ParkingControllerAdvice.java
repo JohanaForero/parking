@@ -29,6 +29,7 @@ public class ParkingControllerAdvice {
                     HttpStatus.BAD_REQUEST),
             new AbstractMap.SimpleEntry<>(ParkingException.UserNoAuthorized.class, HttpStatus.FORBIDDEN),
             new AbstractMap.SimpleEntry<>(ParkingException.EmptyList.class, HttpStatus.NOT_FOUND),
+            new AbstractMap.SimpleEntry<>(ParkingException.ParkingEmpty.class, HttpStatus.BAD_REQUEST),
             new AbstractMap.SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.BAD_REQUEST));
 
     @ExceptionHandler(ParkingException.class)

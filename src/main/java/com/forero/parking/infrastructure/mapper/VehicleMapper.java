@@ -16,9 +16,6 @@ import java.time.OffsetDateTime;
 
 @Mapper
 public interface VehicleMapper {
-    @Mapping(target = "id", ignore = true)
-    Vehicle toDomain(String licensePlate);
-
     Vehicle toDomain(VehicleEntity vehicleEntity);
 
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
@@ -32,6 +29,8 @@ public interface VehicleMapper {
 
     @Mapping(target = "pageSize", source = "pageSize")
     @Mapping(target = "page", source = "page")
+    @Mapping(target = "totalPages", ignore = true)
+    @Mapping(target = "total", ignore = true)
     Pagination toModelToPagination(PaginationRequestDto paginationRequestDto);
 
     @Mapping(target = "vehicles", source = "vehicles")

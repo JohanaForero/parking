@@ -50,7 +50,7 @@ public interface DbPort {
 
     boolean getCurrentParkingName(Parking parking);
 
-    int getTotalVehiclesToAdmin(int parkingId);
+    int getTotalVehicles(int parkingId);
 
     List<History> getVehicles(int parkingId, Pagination pagination);
 

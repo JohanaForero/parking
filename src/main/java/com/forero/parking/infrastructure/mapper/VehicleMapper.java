@@ -22,7 +22,6 @@ public interface VehicleMapper {
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
     @Mapping(target = "id", source = "vehicle.id")
     @Mapping(target = "code", source = "parkingLot.code")
-    @Mapping(target = "entranceDate", source = "entranceDate")
     VehicleResponseDto toModelToDto(History vehicles);
 
     default OffsetDateTime map(final LocalDateTime localDateTime) {

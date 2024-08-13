@@ -3,9 +3,12 @@ package com.forero.parking.application.service;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
+import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public record ValidationService(DbPort dbPort) {
@@ -57,6 +60,23 @@ public record ValidationService(DbPort dbPort) {
         final boolean currentName = this.dbPort.getCurrentParkingName(parking);
         if (!currentName) {
             this.validateParkingNameAvailability(parking.getName());
+        }
+    }
+
+    public void validateVehicles(final List<History> histories) {
+        if (this.isEmptyOrNull(histories)) {
+            throw new ParkingException.EmptyList("The parking does not have vehicles");
+        }
+    }
+
+    public boolean isEmptyOrNull(final List<History> histories) {
+        return histories == null || histories.isEmpty();
+    }
+
+    public void parkingIsEmpty(final int parkingId) {
+        final boolean isParkingInUse = this.dbPort.existsVehiclesInParking(parkingId);
+        if (isParkingInUse) {
+            throw new ParkingException.ParkingEmpty("The parking is not empty!");
         }
     }
 }

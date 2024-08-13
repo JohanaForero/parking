@@ -1,5 +1,6 @@
 package com.forero.parking.application.port;
 
+import com.forero.parking.domain.agregate.Pagination;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
@@ -49,4 +50,9 @@ public interface DbPort {
 
     boolean getCurrentParkingName(Parking parking);
 
+    int getTotalVehicles(int parkingId);
+
+    List<History> getVehicles(int parkingId, Pagination pagination);
+
+    boolean existsVehiclesInParking(int parkingId);
 }

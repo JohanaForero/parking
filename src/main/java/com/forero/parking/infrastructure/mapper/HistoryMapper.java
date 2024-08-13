@@ -9,7 +9,10 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface HistoryMapper {
-    @Mapping(target = "parkingLot.parking.name", source = "parkingLot.parking.parkingName")
+    @Mapping(target = "parkingLot.parking.partnerId", ignore = true)
+    @Mapping(target = "parkingLot.parking.costPerHour", ignore = true)
+    @Mapping(target = "parkingLot.parking.name", ignore = true)
+    @Mapping(target = "parkingLot.parking.numberOfParkingLots", ignore = true)
     History toDomain(HistoryEntity historyEntity);
 
     ParkingEntranceResponseDto toEntranceDto(History history);

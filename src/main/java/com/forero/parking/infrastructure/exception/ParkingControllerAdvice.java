@@ -3,6 +3,7 @@ package com.forero.parking.infrastructure.exception;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.infrastructure.controller.ParkingController;
+import com.forero.parking.infrastructure.controller.VehiclesController;
 import com.forero.parking.openapi.model.ErrorObjectDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,15 +19,17 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 @Slf4j
-@ControllerAdvice(assignableTypes = ParkingController.class)
+@ControllerAdvice(assignableTypes = {VehiclesController.class, ParkingController.class})
 public class ParkingControllerAdvice {
-    private static final String LOGGER_PREFIX = String.format("[%s]", EntranceControllerAdvice.class.getSimpleName());
+    private static final String LOGGER_PREFIX = String.format("[%s]", ParkingControllerAdvice.class.getSimpleName());
     private static final Map<Class<? extends RuntimeException>, HttpStatus> HTTP_STATUS_BY_RUNTIME_EXCEPTION_CLASS = Map.ofEntries(
             new AbstractMap.SimpleEntry<>(ParkingException.ParkingNoFoundException.class,
                     HttpStatus.BAD_REQUEST),
             new AbstractMap.SimpleEntry<>(ParkingException.ParkingNameAlreadyExistsException.class,
                     HttpStatus.BAD_REQUEST),
             new AbstractMap.SimpleEntry<>(ParkingException.UserNoAuthorized.class, HttpStatus.FORBIDDEN),
+            new AbstractMap.SimpleEntry<>(ParkingException.EmptyList.class, HttpStatus.NOT_FOUND),
+            new AbstractMap.SimpleEntry<>(ParkingException.ParkingEmpty.class, HttpStatus.BAD_REQUEST),
             new AbstractMap.SimpleEntry<>(EntranceException.NotFoundParkingException.class, HttpStatus.BAD_REQUEST));
 
     @ExceptionHandler(ParkingException.class)

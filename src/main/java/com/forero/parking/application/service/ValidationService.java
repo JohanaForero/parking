@@ -79,4 +79,12 @@ public record ValidationService(DbPort dbPort) {
             throw new ParkingException.ParkingEmpty("The parking is not empty!");
         }
     }
+
+    public void validateUpdateParkingCodeNotLowerThanInUse(final int parkingId, final int numberOfParkingLots) {
+        final boolean isParkingCodeNotInUse = this.dbPort.isCodeIsLowerThanCurrent(parkingId, numberOfParkingLots);
+        if (isParkingCodeNotInUse) {
+            throw new ParkingException.ParkingCodeConflictException("The quota of lots to be updated must not be less" +
+                    " than the one currently in use!");
+        }
+    }
 }

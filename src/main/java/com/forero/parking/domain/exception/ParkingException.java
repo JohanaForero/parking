@@ -55,4 +55,13 @@ public class ParkingException extends RuntimeException {
             super(message);
         }
     }
+
+    public static class ParkingCodeConflictException extends ParkingException {
+        @Serial
+        private static final long serialVersionUID = 5984767771427250924L;
+
+        public ParkingCodeConflictException(final String message) {
+            super(message);
+        }
+    }
 }

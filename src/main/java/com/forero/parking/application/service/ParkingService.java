@@ -50,6 +50,8 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
 
     public void updateParking(final Parking parking) {
         this.validationService.validateNameChange(parking);
+        final int parkingId = parking.getId().intValue();
+        this.validationService.validateUpdateParkingCodeNotLowerThanInUse(parkingId, parking.getNumberOfParkingLots());
         this.dbPort.updateParking(parking);
     }
 

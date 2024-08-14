@@ -32,6 +32,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -274,7 +275,19 @@ public class PostGreSqlAdapter implements DbPort {
 
     @Override
     public List<History> getVehiclesStatics(final int parkingId) {
-//        List<History> histories = this.historyRepository.(parkingId);
-        return List.of();
+        final List<History> statics23 = new ArrayList<>();
+        final Pageable topTen = PageRequest.of(0, 10);
+        final List<VehicleEntity> vehicles = this.historyRepository.findTop10VehiclesByEntriesAndDurationInParking(parkingId, topTen);
+        for (final VehicleEntity vehicle : vehicles) {
+            final int entryCount = this.historyRepository.countEntriesByVehicleInParking(parkingId, vehicle.getId());
+            final Vehicle vehicle2 = this.vehicleMapper.toDomain(vehicle);
+            final ParkingLot parkingLot = new ParkingLot();
+            parkingLot.setCode(entryCount);
+            final History history = new History();
+            history.setVehicle(vehicle2);
+            history.setParkingLot(parkingLot);
+            statics23.add(history);
+        }
+        return statics23;
     }
 }

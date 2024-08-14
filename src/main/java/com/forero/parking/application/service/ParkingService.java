@@ -3,14 +3,12 @@ package com.forero.parking.application.service;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.agregate.Pagination;
 import com.forero.parking.domain.agregate.VehiclePageResult;
-import com.forero.parking.domain.agregate.VehiclesAgregate;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.infrastructure.util.JwtUtil;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -96,12 +94,8 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public List<History> getLimitedVehiclesInParkingById(final int parkingId) {
-        final VehiclesAgregate vehicles = new VehiclesAgregate();
+
         final List<History> histories = this.dbPort.getVehiclesStatics(parkingId);
-        final List<VehiclesAgregate> vehicles2 = new ArrayList<>();
-        vehicles2.add(vehicles);
-
-
-        return vehicles2;
+        return histories;
     }
 }

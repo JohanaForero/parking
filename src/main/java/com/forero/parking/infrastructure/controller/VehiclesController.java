@@ -43,6 +43,7 @@ public class VehiclesController implements VehiclesApi {
     @Override
     public ResponseEntity<VehicleParkingResponseDto> getLimitedVehiclesInParkingById(final Long parkingId) {
         final List<History> vehicles = this.parkingService.getLimitedVehiclesInParkingById(parkingId.intValue());
-        return VehiclesApi.super.getLimitedVehiclesInParkingById(parkingId);
+        final VehicleParkingResponseDto dtoResponse = this.vehicleMapper.toDomainToDto(1, vehicles);
+        return new ResponseEntity<>(dtoResponse, HttpStatus.OK);
     }
 }

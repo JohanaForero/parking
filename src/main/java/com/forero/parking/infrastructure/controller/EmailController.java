@@ -3,6 +3,7 @@ package com.forero.parking.infrastructure.controller;
 import com.forero.parking.application.service.EmailService;
 import com.forero.parking.infrastructure.adapter.gateways.Email;
 import com.forero.parking.infrastructure.mapper.EmailMapper;
+import com.forero.parking.infrastructure.util.JwtTokenExtractor;
 import com.forero.parking.openapi.api.EmailApi;
 import com.forero.parking.openapi.model.ParkingEmailRequestDto;
 import com.forero.parking.openapi.model.ParkingEmailResponseDto;
@@ -24,9 +25,8 @@ public class EmailController implements EmailApi {
     @PreAuthorize("hasAnyAuthority('ADMIN','PARTNER')")
     public ResponseEntity<ParkingEmailResponseDto> sendEmail(final ParkingEmailRequestDto parkingEmailRequestDto) {
         final Email email = this.emailMapper.toDomain(parkingEmailRequestDto);
-
-        final String response = this.emailService.sendEmail(email);
-
+        final String token = JwtTokenExtractor.extractTokenFromHeader();
+        final String response = this.emailService.sendEmail(email, token);
         return new ResponseEntity<>(this.emailMapper.toDto(response), HttpStatus.OK);
     }
 }

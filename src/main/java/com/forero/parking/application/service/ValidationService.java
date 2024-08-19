@@ -1,6 +1,7 @@
 package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.DbPort;
+import com.forero.parking.domain.exception.EmailException;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
 import com.forero.parking.domain.model.History;
@@ -38,9 +39,16 @@ public record ValidationService(DbPort dbPort) {
 
     public void validateParkingNameAvailability(final String parkingName) {
         if (!this.dbPort.existsParkingName(parkingName)) {
-            throw new ParkingException.ParkingNameAlreadyExistsException((String.format("Parking with name %s it " +
-                    "already exists", parkingName)));
+            throw new ParkingException.ParkingNameAlreadyExistsException((String.format(
+                    "Parking with name %s does not exist", parkingName)));
         }
+    }
+
+    public void validateExistsParking(final String parkingName) {
+        if (this.dbPort.existsParkingName(parkingName)) {
+            throw new ParkingException.ParkingNoFoundException("Parking Not found");
+        }
+
     }
 
     public void validateParkingBelongsToPartner(final int parkingId, final String partnerId) {
@@ -85,6 +93,14 @@ public record ValidationService(DbPort dbPort) {
         if (isParkingCodeNotInUse) {
             throw new ParkingException.ParkingCodeConflictException("The quota of lots to be updated must not be less" +
                     " than the one currently in use!");
+        }
+    }
+
+    public void vehicleExistsInTheParking(final int parkingId, final String licensePlate) {
+
+        final boolean isVehicleInParking = this.dbPort.vehicleExistsInTheParkingAtTheMoment(parkingId, licensePlate);
+        if (!isVehicleInParking) {
+            throw new EmailException.VehicleNotInsideException("The vehicle does not exist in the parking!");
         }
     }
 }

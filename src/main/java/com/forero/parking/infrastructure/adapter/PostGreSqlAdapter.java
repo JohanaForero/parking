@@ -290,4 +290,16 @@ public class PostGreSqlAdapter implements DbPort {
         }
         return statics23;
     }
+
+    @Override
+    public int findIdByName(String parkingName) {
+        final Long parkingId = this.parkingRepository.findIdByParkingName(parkingName);
+        return parkingId.intValue();
+    }
+
+    @Override
+    public boolean vehicleExistsInTheParkingAtTheMoment(final int parkingId, final String licensePlate) {
+        log.info(LOGGER_PREFIX + "[vehicleExistsInTheParkingAtTheMoment] Request {}", parkingId);
+        return this.historyRepository.isVehicleInParking(licensePlate, (long) parkingId);
+    }
 }

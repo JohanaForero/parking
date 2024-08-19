@@ -41,8 +41,7 @@ resilience4j.circuitbreaker:
       minimumNumberOfCalls: 10
       automaticTransitionFromOpenToHalfOpenEnabled: true
 
-email:
-  server:
-    url: http://localhost:1080
-  endpoint:
-    send-email: /mail
+base:
+  url:
+    micro:
+      send-email: http://localhost:9080/mail/send

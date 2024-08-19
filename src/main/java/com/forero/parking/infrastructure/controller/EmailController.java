@@ -1,7 +1,7 @@
 package com.forero.parking.infrastructure.controller;
 
 import com.forero.parking.application.service.EmailService;
-import com.forero.parking.domain.model.Email;
+import com.forero.parking.infrastructure.adapter.gateways.Email;
 import com.forero.parking.infrastructure.mapper.EmailMapper;
 import com.forero.parking.openapi.api.EmailApi;
 import com.forero.parking.openapi.model.ParkingEmailRequestDto;

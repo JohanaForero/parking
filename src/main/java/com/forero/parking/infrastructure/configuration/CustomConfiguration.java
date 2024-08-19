@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 
 @Configuration
 public class CustomConfiguration {
-    @Value("${email.server.url}")
+    @Value("${base.url.micro.send-email}")
     private String emailServerUrl;
 
     @Bean
@@ -25,12 +25,12 @@ public class CustomConfiguration {
     }
 
     @Bean
-    RestClient emailRestClient() {
-        return RestClient.builder()
+    public WebClient webClient(WebClient.Builder builder) {
+        return builder
                 .baseUrl(this.emailServerUrl)
                 .build();
     }
-
+    
     @Bean
     public CircuitBreakerRegistry circuitBreakerRegistry() {
         return CircuitBreakerRegistry.ofDefaults();

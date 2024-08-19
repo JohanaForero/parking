@@ -39,8 +39,8 @@ public record ValidationService(DbPort dbPort) {
 
     public void validateParkingNameAvailability(final String parkingName) {
         if (!this.dbPort.existsParkingName(parkingName)) {
-            throw new ParkingException.ParkingNameAlreadyExistsException((String.format(
-                    "Parking with name %s does not exist", parkingName)));
+            throw new ParkingException.ParkingNameAlreadyExistsException((String.format("Parking with name %s it " +
+                    "already exists", parkingName)));
         }
     }
 

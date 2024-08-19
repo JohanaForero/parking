@@ -58,15 +58,6 @@ public interface VehicleMapper {
     @Mapping(target = "vehicle.id", source = "vehicle.id")
     History toModel(HistoryEntity historyEntity);
 
-    //    @Mapping(target = "parkingLot.parking.partnerId", ignore = true)
-//    @Mapping(target = "parkingLot.parking.costPerHour", ignore = true)
-//    @Mapping(target = "parkingLot.parking.name", ignore = true)
-//    @Mapping(target = "parkingLot.parking.numberOfParkingLots", ignore = true)
-//    @Mapping(target = "parkingLot.entranceDate", ignore = true)
-//    @Mapping(target = "parkingLot.id", ignore = true)
-//    @Mapping(target = "departureDate", ignore = true)
-//    @Mapping(source = "totalPaid", ignore = true)
-//    @Mapping(source = "entranceDate", ignore = true)
     @Mapping(target = "licensePlate", source = "vehicle.licensePlate")
     @Mapping(target = "total", source = "parkingLot.code")
     @Mapping(target = "id", source = "vehicle.id")

@@ -86,7 +86,14 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
             "AND h.departureDate IS NULL " +
             "AND h.totalPaid IS NULL")
     boolean isVehicleInParking(@Param("licensePlate") String licensePlate, @Param("parkingId") Long parkingId);
-    
+
+
+    @Query("SELECT h.vehicle AS vehicle, COUNT(h.id) AS visitCount " +
+            "FROM HistoryEntity h " +
+            "GROUP BY h.vehicle " +
+            "ORDER BY COUNT(h.id) DESC")
+    Page<Object[]> findTop10VehiclesByTotalEntries(Pageable pageable);
+
 }
 
 

@@ -120,6 +120,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+  /vehicles/top-registered:
+    get:
+      tags:
+        - Parking
+      summary: Get the top 10 most registered vehicles across all parkings
+      description: Retrieve a list of the 10 vehicles that have been registered the most in different parkings, along with the number of times they have been registered.
+      operationId: getTopRegisteredVehicles
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: Successfully retrieved the list of vehicles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleParkingResponse'
+        400:
+          description: Bad Request - If there is an issue with the request parameters or data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        403:
+          description: Forbidden - If the token does not have the necessary permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Not Found - If the resource list is empty or if no vehicles match the criteria.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        500:
+          description: Internal Server Error - General system error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+
   /vehicles/{parkingId}:
     get:
       tags:

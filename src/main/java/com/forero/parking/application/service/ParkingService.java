@@ -94,8 +94,10 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public List<History> getLimitedVehiclesInParkingById(final int parkingId) {
+        return this.dbPort.getVehiclesStatics(parkingId);
+    }
 
-        final List<History> histories = this.dbPort.getVehiclesStatics(parkingId);
-        return histories;
+    public List<History> getTopRegisteredVehicles() {
+        return this.dbPort.getTopRegisteredVehicles();
     }
 }

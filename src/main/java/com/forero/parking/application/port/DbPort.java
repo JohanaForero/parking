@@ -63,4 +63,6 @@ public interface DbPort {
     int findIdByName(String parkingName);
 
     boolean vehicleExistsInTheParkingAtTheMoment(int parkingId, String licensePlate);
+
+    List<History> getTopRegisteredVehicles();
 }

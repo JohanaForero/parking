@@ -302,4 +302,22 @@ public class PostGreSqlAdapter implements DbPort {
         log.info(LOGGER_PREFIX + "[vehicleExistsInTheParkingAtTheMoment] Request {}", parkingId);
         return this.historyRepository.isVehicleInParking(licensePlate, (long) parkingId);
     }
+
+    @Override
+    public List<History> getTopRegisteredVehicles() {
+        final List<History> statics = new ArrayList<>();
+        Page<Object[]> topVehicles = historyRepository.findTop10VehiclesByTotalEntries(PageRequest.of(0, 10));
+        for (Object[] result : topVehicles.getContent()) {
+            VehicleEntity vehicleEntity = (VehicleEntity) result[0];
+            final Vehicle vehicle = this.vehicleMapper.toDomain(vehicleEntity);
+            int visitCount = ((Long) result[1]).intValue();
+            final ParkingLot parkingLot = new ParkingLot();
+            parkingLot.setCode(visitCount);
+            final History history = new History();
+            history.setVehicle(vehicle);
+            history.setParkingLot(parkingLot);
+            statics.add(history);
+        }
+        return statics;
+    }
 }

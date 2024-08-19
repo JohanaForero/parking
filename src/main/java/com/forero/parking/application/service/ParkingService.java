@@ -92,4 +92,10 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
         }
         return (int) Math.ceil((double) totalItems / itemsPerPage);
     }
+
+    public List<History> getLimitedVehiclesInParkingById(final int parkingId) {
+
+        final List<History> histories = this.dbPort.getVehiclesStatics(parkingId);
+        return histories;
+    }
 }

@@ -9,6 +9,7 @@ import com.forero.parking.infrastructure.mapper.ParkingMapper;
 import com.forero.parking.infrastructure.mapper.VehicleMapper;
 import com.forero.parking.infrastructure.util.JwtTokenExtractor;
 import com.forero.parking.openapi.api.VehiclesApi;
+import com.forero.parking.openapi.model.VehicleParkingResponseDto;
 import com.forero.parking.openapi.model.VehiclesRequestDto;
 import com.forero.parking.openapi.model.VehiclesResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +38,12 @@ public class VehiclesController implements VehiclesApi {
                 paginationRequest);
         final VehiclesResponseDto vehiclesResponseDto = this.vehicleMapper.toDto(vehicleVehiclePageResult);
         return new ResponseEntity<>(vehiclesResponseDto, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<VehicleParkingResponseDto> getLimitedVehiclesInParkingById(final Long parkingId) {
+        final List<History> vehicles = this.parkingService.getLimitedVehiclesInParkingById(parkingId.intValue());
+        final VehicleParkingResponseDto dtoResponse = this.vehicleMapper.toDomainToDto(1, vehicles);
+        return new ResponseEntity<>(dtoResponse, HttpStatus.OK);
     }
 }

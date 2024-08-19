@@ -1,4 +1,4 @@
-package com.forero.parking.domain.model;
+package com.forero.parking.infrastructure.adapter.gateways;
 
 import lombok.Getter;
 import lombok.Setter;

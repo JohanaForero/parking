@@ -120,6 +120,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+  /vehicles/{parkingId}:
+    get:
+      tags:
+        - Parking
+      summary: Get the top 10 earning vehicles in a specific parking
+      description: Retrieve the list of the 10 vehicles that have registered the most entries in a specific parking.
+      operationId: getLimitedVehiclesInParkingById
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: parkingId
+          in: path
+          required: true
+          description: The ID of the parking lot for which to retrieve the list of vehicles.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successfully retrieved the list of vehicles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VehicleParkingResponse'
+        400:
+          description: Bad Request - If the provided ID is invalid or if the limit is not a number.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        403:
+          description: Forbidden - If the token does not have the necessary permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Not Found - If the parking with the specified ID does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        500:
+          description: Internal Server Error - General system error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
   /email:
     post:
       tags:
@@ -323,6 +371,9 @@ components:
       type: string
       description: Parking name
       example: PARKING LOT HIRE ME
+    total:
+      type: integer
+      description: Total of items.
     code:
       type: integer
       format: int64
@@ -432,8 +483,7 @@ components:
         - totalPages
       properties:
         total:
-          type: integer
-          description: Total of items.
+          $ref: '#/components/schemas/total'
         totalPages:
           type: integer
           description: Total number of pages.
@@ -638,3 +688,31 @@ components:
           format: date-time
           description: Date of entry of the vehicle into the parking lot
           example: 2024-07-20T14:30:00Z
+    VehicleParkingResponse:
+      type: object
+      required:
+        - vehicleParking
+      properties:
+        vehicleParking:
+          type: array
+          description: List of vehicles
+          items:
+            $ref: '#/components/schemas/VehicleParking'
+    VehicleParking:
+      required:
+        - id
+        - licensePlate
+        - total
+      type: object
+      additionalProperties: false
+      description: Response when a vehicle successfully exits the parking lot
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Vehicle id
+          example: 123
+        licensePlate:
+          $ref: '#/components/schemas/licensePlate'
+        total:
+          $ref: '#/components/schemas/total'

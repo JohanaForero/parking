@@ -1,7 +1,7 @@
 package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.EmailServerPort;
-import com.forero.parking.domain.model.Email;
+import com.forero.parking.infrastructure.adapter.gateways.Email;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -71,7 +71,6 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
             "SUM(CASE WHEN h.departureDate IS NULL THEN CURRENT_TIMESTAMP - h.entranceDate ELSE h.departureDate - h.entranceDate END) DESC")
     List<VehicleEntity> findTop10VehiclesByEntriesAndDurationInParking(@Param("parkingId") long parkingId, Pageable pageable);
 
-
     @Query("SELECT COUNT(DISTINCT h.id) " +
             "FROM HistoryEntity h " +
             "JOIN h.parkingLot pl " +
@@ -80,35 +79,14 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
             "AND h.vehicle.id = :vehicleId")
     int countEntriesByVehicleInParking(@Param("parkingId") long parkingId, @Param("vehicleId") long vehicleId);
 
-    @Query("SELECT h " +
+    @Query("SELECT CASE WHEN COUNT(h) > 0 THEN TRUE ELSE FALSE END " +
             "FROM HistoryEntity h " +
-            "JOIN h.parkingLot pl " +
-            "JOIN pl.parking p " +
-            "WHERE p.id = :parkingId " +
-            "AND h.vehicle.id IN (" +
-            "   SELECT h2.vehicle.id " +
-            "   FROM HistoryEntity h2 " +
-            "   JOIN h2.parkingLot pl2 " +
-            "   JOIN pl2.parking p2 " +
-            "   WHERE p2.id = :parkingId " +
-            "   GROUP BY h2.vehicle.id " +
-            "   ORDER BY COUNT(h2.id) DESC" +
-            ") " +
-            "GROUP BY h.vehicle.id, h.id, h.entranceDate, h.departureDate, h.totalPaid, pl.id " +
-            "ORDER BY COUNT(h.id) DESC")
-    List<HistoryEntity> findTop10HistoriesByTopVehiclesInParking(@Param("parkingId") long parkingId);
-
-
-//    @Query("SELECT h " +
-//            "FROM HistoryEntity h " +
-//            "JOIN h.parkingLot pl " +
-//            "JOIN pl.parking p " +
-//            "WHERE p.id = :parkingId " +
-//            "AND pl.vehicle.id = :vehicleId " +
-//            "ORDER BY h.entranceDate DESC")
-//    Optional<HistoryEntity> findTopByVehicleAndParkingId(@Param("vehicleId") long vehicleId,
-//                                                         @Param("parkingId") int parkingId);
-
+            "WHERE h.vehicle.licensePlate = :licensePlate " +
+            "AND h.parkingLot.parking.id = :parkingId " +
+            "AND h.departureDate IS NULL " +
+            "AND h.totalPaid IS NULL")
+    boolean isVehicleInParking(@Param("licensePlate") String licensePlate, @Param("parkingId") Long parkingId);
+    
 }
 
 

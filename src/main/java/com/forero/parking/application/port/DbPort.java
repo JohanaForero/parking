@@ -59,4 +59,8 @@ public interface DbPort {
     boolean isCodeIsLowerThanCurrent(int parkingId, int numberOfParkingLots);
 
     List<History> getVehiclesStatics(int parkingId);
+
+    int findIdByName(String parkingName);
+
+    boolean vehicleExistsInTheParkingAtTheMoment(int parkingId, String licensePlate);
 }

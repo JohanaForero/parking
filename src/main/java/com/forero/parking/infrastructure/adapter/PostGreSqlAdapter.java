@@ -3,6 +3,7 @@ package com.forero.parking.infrastructure.adapter;
 import com.forero.parking.application.configuration.TimeConfiguration;
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.agregate.Pagination;
+import com.forero.parking.domain.agregate.VehicleAgregate;
 import com.forero.parking.domain.exception.DepartureException;
 import com.forero.parking.domain.exception.EntranceException;
 import com.forero.parking.domain.exception.ParkingException;
@@ -319,5 +320,23 @@ public class PostGreSqlAdapter implements DbPort {
             statics.add(history);
         }
         return statics;
+    }
+
+    @Override
+    public List<VehicleAgregate> getVehiclesParkedForTheFirstTime(int parkingId) {
+        final List<VehicleAgregate> result = new ArrayList<>();
+        final List<VehicleEntity> vehicleEntities =
+                this.historyRepository.findVehiclesCurrentlyParkedInParking(parkingId);
+        for (final VehicleEntity vehicle : vehicleEntities) {
+            VehicleAgregate vehicleAgregate = new VehicleAgregate();
+            vehicleAgregate.setVehicleId(vehicle.getId());
+            vehicleAgregate.setLicensePlate(vehicle.getLicensePlate());
+            final int timesParked = this.historyRepository.countVehicleEntriesInParking(vehicle.getId(), (long) parkingId);
+            boolean isFirstTime = timesParked == 1;
+            vehicleAgregate.setIsFirstTime(isFirstTime);
+            result.add(vehicleAgregate);
+
+        }
+        return result;
     }
 }

@@ -94,6 +94,13 @@ public interface HistoryRepository extends JpaRepository<HistoryEntity, Long> {
             "ORDER BY COUNT(h.id) DESC")
     Page<Object[]> findTop10VehiclesByTotalEntries(Pageable pageable);
 
+    @Query("SELECT h.vehicle FROM HistoryEntity h WHERE h.parkingLot.parking.id = :parkingId AND h.departureDate IS NULL AND h.totalPaid IS NULL")
+    List<VehicleEntity> findVehiclesCurrentlyParkedInParking(@Param("parkingId") int parkingId);
+
+    @Query("SELECT COUNT(h) FROM HistoryEntity h WHERE h.vehicle.id = :vehicleId AND h.parkingLot.parking.id = :parkingId")
+    int countVehicleEntriesInParking(@Param("vehicleId") Long vehicleId, @Param("parkingId") Long parkingId);
+
+
 }
 
 

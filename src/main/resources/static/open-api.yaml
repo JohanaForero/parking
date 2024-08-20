@@ -120,6 +120,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorObject'
+  /vehicles/{parkingId}/first-time:
+    get:
+      tags:
+        - Parking
+      summary: Verify first-time parked vehicles in a parking lot
+      description: Verifies which of the currently parked vehicles in the parking lot are there for the first time.
+      operationId: verifyFirstTimeParkedVehicles
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: parkingId
+          in: path
+          required: true
+          description: The ID of the parking lot where you want to verify first-time parked vehicles.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successfully verified the first-time parked vehicles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirstTimeVehicleResponse'
+        400:
+          description: Bad Request - If the provided ID is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        403:
+          description: Forbidden - If the token does not have the necessary permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        404:
+          description: Not Found - If the parking lot with the specified ID does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
+        500:
+          description: Internal Server Error - General system error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorObject'
   /vehicles/top-registered:
     get:
       tags:
@@ -757,3 +805,26 @@ components:
           $ref: '#/components/schemas/licensePlate'
         total:
           $ref: '#/components/schemas/total'
+    FirstTimeVehicleResponse:
+      type: object
+      properties:
+        firstTimeVehicles:
+          type: array
+          items:
+            type: object
+            properties:
+              vehicleId:
+                type: integer
+                format: int64
+              licensePlate:
+                type: string
+              isFirstTime:
+                type: boolean
+                description: Indicates if the vehicle is parked for the first time in this parking lot.
+          example:
+            - vehicleId: 123
+              licensePlate: ABC123
+              isFirstTime: true
+            - vehicleId: 456
+              licensePlate: XYZ789
+              isFirstTime: false

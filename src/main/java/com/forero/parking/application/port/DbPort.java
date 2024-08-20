@@ -1,6 +1,7 @@
 package com.forero.parking.application.port;
 
 import com.forero.parking.domain.agregate.Pagination;
+import com.forero.parking.domain.agregate.VehicleAgregate;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
 import com.forero.parking.domain.model.ParkingLot;
@@ -65,4 +66,6 @@ public interface DbPort {
     boolean vehicleExistsInTheParkingAtTheMoment(int parkingId, String licensePlate);
 
     List<History> getTopRegisteredVehicles();
+
+    List<VehicleAgregate> getVehiclesParkedForTheFirstTime(int parkingId);
 }

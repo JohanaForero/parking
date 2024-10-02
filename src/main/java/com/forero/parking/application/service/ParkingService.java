@@ -2,6 +2,7 @@ package com.forero.parking.application.service;
 
 import com.forero.parking.application.port.DbPort;
 import com.forero.parking.domain.agregate.Pagination;
+import com.forero.parking.domain.agregate.VehicleAgregate;
 import com.forero.parking.domain.agregate.VehiclePageResult;
 import com.forero.parking.domain.model.History;
 import com.forero.parking.domain.model.Parking;
@@ -94,8 +95,15 @@ public record ParkingService(DbPort dbPort, ValidationService validationService)
     }
 
     public List<History> getLimitedVehiclesInParkingById(final int parkingId) {
+        return this.dbPort.getVehiclesStatics(parkingId);
+    }
 
-        final List<History> histories = this.dbPort.getVehiclesStatics(parkingId);
-        return histories;
+    public List<History> getTopRegisteredVehicles() {
+        return this.dbPort.getTopRegisteredVehicles();
+    }
+
+    public List<VehicleAgregate> getVehiclesParkedForTheFirstTime(final int parkingId) {
+        return this.dbPort.getVehiclesParkedForTheFirstTime(parkingId);
+
     }
 }
